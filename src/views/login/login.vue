@@ -1,44 +1,41 @@
 <template>
     <div class="container">
         <div class="formBlock">
-            <Form ref="formInline" :model="formInline" :rules="ruleInline" label-width="60">
+            <Form ref="formInline" :model="formInline" :rules="ruleInline" :label-width="60">
                 <FormItem label="账户" prop="user">
-                    <Input type="text" v-model="formInline.user" placeholder="请输入用户名" size="large">
+                    <Input type="text" v-model="formInline.user" placeholder="请输入用户名">
                     <Icon type="ios-person-outline" slot="prepend"></Icon>
                     </Input>
                 </FormItem>
                 <FormItem label="密码" prop="password">
-                    <Input type="password" v-model="formInline.password" placeholder="请输入密码" size="large">
+                    <Input type="password" v-model="formInline.password" placeholder="请输入密码">
                     <Icon type="ios-lock-outline" slot="prepend"></Icon>
                     </Input>
                 </FormItem>
-                <FormItem label="滑动验证">
-                    <div class="sliderBlock">
+                <FormItem label="滑动验证" >
+                    <div class="sliderBlock" @mouseover="sliderOver" @mouseout="sliderOut">
                         <div class="slider">
                             <span></span>
                         </div>
                     </div>
                 </FormItem>
-                <FormItem>
+                <FormItem style="margin-bottom: 5px;">
                     <Row>
-                        <Col span="11">
+                        <Col span="18">
                             <FormItem>
                                 <CheckboxGroup >
                                     <Checkbox label="记住密码"></Checkbox>
                                 </CheckboxGroup>
                             </FormItem>
                         </Col>
-                        <Col span="2" style="text-align: center">-</Col>
-                        <Col span="11">
-                            <CheckboxGroup>
-                                <Checkbox label="记住密码"></Checkbox>
-                            </CheckboxGroup>
+                        <Col span="6">
+                            <a href="javascript:void(0)">忘记密码？</a>
                         </Col>
                     </Row>
 
                 </FormItem>
                 <FormItem>
-                    <Button type="primary" @click="handleSubmit('formInline')">登录</Button>
+                    <Button type="primary" @click="handleSubmit('formInline')" long size="large">登录</Button>
                 </FormItem>
             </Form>
         </div>
@@ -74,6 +71,12 @@
                         this.$Message.error('Fail!');
                     }
                 })
+            },
+            sliderOver(){
+                console.log("mouse over");
+            },
+            sliderOut(){
+                console.log("mouse out");
             }
         }
     }
@@ -84,11 +87,11 @@
         width: 100%;
         height: 100%;
         background: #E9EEF3;
-        padding-top: 200px;
+        padding-top: 120px;
     }
     .formBlock{
         width: 380px;
-        height: 450px;
+        height: 360px;
         background: #fff;
         border-radius: 10px;
         padding: 20px;
@@ -102,13 +105,13 @@
     }
     .sliderBlock{
         width: 100%;
-        height: 35px;
+        height: 32px;
         border-radius: 4px;
         border: 1px solid #dcdee2;
     }
     .slider{
-        width: 35px;
-        height: 35px;
+        width: 32px;
+        height: 32px;
         border: 1px solid #dcdee2;
         /*background: #1991fa;*/
         position: relative;
