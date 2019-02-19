@@ -1,6 +1,6 @@
 <template>
-    <div class="container">
-        <div class="formBlock">
+    <div class="container" @mouseup="sliderUp" @mousemove="sliderMove">
+        <div class="form-block">
             <Form ref="formInline" :model="formInline" :rules="ruleInline" :label-width="60">
                 <FormItem label="账户" prop="user">
                     <Input type="text" v-model="formInline.user" placeholder="请输入用户名">
@@ -12,12 +12,8 @@
                     <Icon type="ios-lock-outline" slot="prepend"></Icon>
                     </Input>
                 </FormItem>
-                <FormItem label="滑动验证" >
-                    <div class="sliderBlock" @mouseover="sliderOver" @mouseout="sliderOut">
-                        <div class="slider">
-                            <span></span>
-                        </div>
-                    </div>
+                <FormItem label="滑动验证" style="margin-bottom: 5px;">
+                    <picValidation :dragDistance="sliderDragDistance"></picValidation>
                 </FormItem>
                 <FormItem style="margin-bottom: 5px;">
                     <Row>
@@ -32,7 +28,6 @@
                             <a href="javascript:void(0)">忘记密码？</a>
                         </Col>
                     </Row>
-
                 </FormItem>
                 <FormItem>
                     <Button type="primary" @click="handleSubmit('formInline')" long size="large">登录</Button>
@@ -43,6 +38,8 @@
 </template>
 
 <script>
+    import picValidation from '../../components/login/picValidation.vue';
+    import axios from 'axios';
     export default {
         data () {
             return {
@@ -59,7 +56,9 @@
                         { required: true, message: '请输入密码', trigger: 'blur' },
                     ],
                     rememberMe:[]
-                }
+                },
+                picBlockShow: false,
+                sliderDragDistance: 0
             }
         },
         methods: {
@@ -72,12 +71,29 @@
                     }
                 })
             },
-            sliderOver(){
-                console.log("mouse over");
+            sliderUp(){
+                this.$store.commit('sliderDragable',false);
+                this.sliderDragDistance = 0;
             },
-            sliderOut(){
-                console.log("mouse out");
+            sliderMove(event){
+                if(this.$store.state.sliderDragable){
+                    let distance = event.pageX - this.$store.state.sliderDragDistance;
+                    this.sliderDragDistance = distance < 0 ? 0 : distance > 208 ?  208 : distance;
+                }
             }
+        },
+        created(){
+            console.log("created");
+            console.log(axios);
+            axios({
+                method: 'get',
+                url: 'http://172.18.65.9:7654/api/values',
+            }).then(function(response){
+                console.log(response);
+            });
+        },
+        components: {
+            picValidation
         }
     }
 </script>
@@ -88,47 +104,36 @@
         height: 100%;
         background: #E9EEF3;
         padding-top: 120px;
+        position: relative;
     }
-    .formBlock{
+
+    .form-block{
         width: 380px;
         height: 360px;
         background: #fff;
         border-radius: 10px;
         padding: 20px;
         box-shadow: 2px 2px 5px rgba(0,0,0,.1), -2px -2px 5px rgba(0,0,0,.1);
-        margin: 0 auto ;
-        position: relative;
+        margin-top: -190px;
+        margin-left: -180px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
     }
+
     form{
         width: 300px;
         margin: 30px 20px 0 10px;
     }
-    .sliderBlock{
-        width: 100%;
-        height: 32px;
-        border-radius: 4px;
-        border: 1px solid #dcdee2;
-    }
-    .slider{
-        width: 32px;
-        height: 32px;
-        border: 1px solid #dcdee2;
-        /*background: #1991fa;*/
-        position: relative;
-    }
-    .slider span{
-        width: 16px;
-        height: 12px;
-        background: url('../../assets/icons.png') 0px -13px no-repeat;
-        display: inline-block;
+
+    .pic-validate-container{
         position: absolute;
-        top: 50%;
-        left: 50%;
-        margin-top: -6px;
-        margin-left: -8px;
+        bottom: -32px;
+        left: 0px;
+        z-index: 999;
     }
-    .sliderActive span{
-        background: url('../../assets/icons.png') 0px 0px no-repeat;
-    }
+
+
+
 </style>
 

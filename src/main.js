@@ -2,6 +2,7 @@ import Vue from 'vue';
 import App from './app.vue';
 import VueRouter from 'vue-router';
 import routes from "./router";
+import store from "./store";
 import './style/common.less'
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';
@@ -16,6 +17,7 @@ const router = new VueRouter({
 
 new Vue({
     render: h => h(App),
-    router: router
+    router,
+    store
 }).$mount('#app');
 
