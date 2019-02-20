@@ -13,7 +13,7 @@
                     </Input>
                 </FormItem>
                 <FormItem label="滑动验证" style="margin-bottom: 5px;">
-                    <picValidation :dragDistance="sliderDragDistance"></picValidation>
+                    <picValidation ref="picValidation" :dragDistance="sliderDragDistance"></picValidation>
                 </FormItem>
                 <FormItem style="margin-bottom: 5px;">
                     <Row>
@@ -58,8 +58,20 @@
                     rememberMe:[]
                 },
                 picBlockShow: false,
-                sliderDragDistance: 0
+                sliderDragDistance: 0,
+                sliderFocus: false
             }
+        },
+        created(){
+            // console.log("created");
+            // console.log(axios);
+            // axios({
+            //     method: 'post',
+            //     url: 'http://47.107.143.99:8085/Login/GetRsaPublicKey',
+            // }).then(function(response){
+            //     console.log(response.data);
+            // });
+            console.log(this.$children);
         },
         methods: {
             handleSubmit(name) {
@@ -72,25 +84,20 @@
                 })
             },
             sliderUp(){
-                this.$store.commit('sliderDragable',false);
+                this.$store.commit('sliderDragable', false);
                 this.sliderDragDistance = 0;
+                this.sliderFocus = false;
+                this.$store.commit('sliderDragDistance', 0);
+                this.$refs.picValidation.picDraw();
             },
             sliderMove(event){
                 if(this.$store.state.sliderDragable){
-                    let distance = event.pageX - this.$store.state.sliderDragDistance;
+                    this.$store.commit('sliderDragDistance', event.pageX);
+                    let distance = this.$store.state.sliderDragDistance;
                     this.sliderDragDistance = distance < 0 ? 0 : distance > 208 ?  208 : distance;
+                    this.$refs.picValidation.moveJigsaw(distance > 204 - 7 * 1.8 ? 204 - 7 * 1.8 : distance);
                 }
             }
-        },
-        created(){
-            console.log("created");
-            console.log(axios);
-            axios({
-                method: 'get',
-                url: 'http://172.18.65.9:7654/api/values',
-            }).then(function(response){
-                console.log(response);
-            });
         },
         components: {
             picValidation

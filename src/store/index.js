@@ -7,6 +7,7 @@ Vue.use(Vuex);
 
 const state = {
     sliderDragable: false,
+    sliderInitX: 0,
     sliderDragDistance: 0
 };
 
