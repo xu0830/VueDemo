@@ -9,6 +9,7 @@
         </transition>
         <div class="pic-clear-box"></div>
         <div class="slider-block">
+            <div v-show="sliderTipShow" :style="{width: sliderDragDistance}" class="slider-box-distance"></div>
             <span v-show="!sliderTipShow">向右拖动滑块填充拼图</span>
             <div class="slider-box" :class="{'slider-box-active': SliderStatus}" :style="{left: dragDistance + 'px'}"
                  @mouseover="sliderActive" @mouseout="sliderBlur" @mousedown.stop.prevent="sliderClick">
@@ -41,14 +42,16 @@
         computed: {
             SliderStatus: function(){
                 if(this.$store.state.sliderDragable){
-                    return true;
+                    return true
                 }else{
-                    return this.IsSliderFocus;
+                    return this.IsSliderFocus
                 }
             },
             sliderTipShow: function(){
-                console.log(this.$store.state.sliderDragDistance);
                 return this.$store.state.sliderDragDistance > 0
+            },
+            sliderDragDistance: function(){
+                return this.$store.state.sliderDragDistance
             }
         },
         methods: {
@@ -196,6 +199,10 @@
         text-align: center;
         position: relative;
     }
+    .slider-distance{
+        height: 32px;
+        background: #d1e9fe;
+    }
     .slider-box{
         width: 32px;
         height: 32px;
@@ -204,8 +211,9 @@
         position: absolute;
         top: 0px;
         left: 0px;
-
     }
+
+
     .slider-box span.slider-box-ctrl{
         width: 16px;
         height: 12px;
