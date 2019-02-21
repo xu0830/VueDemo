@@ -13,7 +13,7 @@
                     </Input>
                 </FormItem>
                 <FormItem label="滑动验证" style="margin-bottom: 5px;">
-                    <picValidation ref="picValidation" :dragDistance="sliderDragDistance"></picValidation>
+                    <picValidation ref="picValidation" :dragDistance="sliderDragDistance" @childEvent="getInitX"></picValidation>
                 </FormItem>
                 <FormItem style="margin-bottom: 5px;">
                     <Row>
@@ -63,15 +63,9 @@
             }
         },
         created(){
-            // console.log("created");
-            // console.log(axios);
-            // axios({
-            //     method: 'post',
-            //     url: 'http://47.107.143.99:8085/Login/GetRsaPublicKey',
-            // }).then(function(response){
-            //     console.log(response.data);
-            // });
-            console.log(this.$children);
+            axios.get('http://localhost:63661/api/check').then(function(response){
+                console.log(response.data);
+            });
         },
         methods: {
             handleSubmit(name) {
@@ -84,19 +78,37 @@
                 })
             },
             sliderUp(){
-                this.$store.commit('sliderDragable', false);
-                this.sliderDragDistance = 0;
-                this.sliderFocus = false;
-                this.$store.commit('sliderDragDistance', 0);
-                this.$refs.picValidation.picDraw();
+                if(this.$store.state.sliderDragable){
+                    this.$store.commit('sliderDragable', false);
+                    if(this.$store.state.sliderDragDistance > 50){
+                        this.$store.commit("sliderValidation", 1);
+                    }else{
+                        this.$store.commit("sliderValidation", 2);
+                    }
+
+                    let _this = this;
+                    setTimeout(function(){
+                        _this.sliderDragDistance = 0;
+                        _this.sliderFocus = false;
+                        _this.$store.commit('sliderDragDistance', 0);
+                        _this.$store.commit('sliderValidation', 0);
+                        _this.$refs.picValidation.picDraw();
+                        _this.$refs.picValidation.sliderBlur();
+                    }, 400);
+                }
             },
             sliderMove(event){
                 if(this.$store.state.sliderDragable){
                     this.$store.commit('sliderDragDistance', event.pageX);
                     let distance = this.$store.state.sliderDragDistance;
                     this.sliderDragDistance = distance < 0 ? 0 : distance > 208 ?  208 : distance;
-                    this.$refs.picValidation.moveJigsaw(distance > 204 - 7 * 1.8 ? 204 - 7 * 1.8 : distance);
+                    this.$refs.picValidation.moveJigsaw(distance < 0 ?  0 :  distance > 204 - 7 * 1.8 ? 204 - 7 * 1.8 : distance);
                 }
+            },
+            getInitX(data){
+                console.log("childEvent");
+                console.log(data);
+                this.sliderInitX = data;
             }
         },
         components: {
