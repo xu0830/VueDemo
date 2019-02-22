@@ -117,8 +117,8 @@
                     if(data.code == 200){
                         _this.$store.commit("randomPoint", data.data.point);
                         _this.$store.commit("token", data.data.token);
-                        this.randomX = data.data.point.x;
-                        this.randomY = data.data.point.y;
+                        _this.randomX = data.data.point.x;
+                        _this.randomY = data.data.point.y;
                         let img = new Image();
                         img.onload = function () {
                             var canvas_bot = document.getElementById('canvas_bot').getContext('2d');
