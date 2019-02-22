@@ -13,7 +13,7 @@
                     </Input>
                 </FormItem>
                 <FormItem label="滑动验证" style="margin-bottom: 5px;">
-                    <picValidation ref="picValidation" :dragDistance="sliderDragDistance" @childEvent="getInitX"></picValidation>
+                    <picValidation ref="picValidation" :dragDistance="sliderDragDistance"></picValidation>
                 </FormItem>
                 <FormItem style="margin-bottom: 5px;">
                     <Row>
@@ -40,6 +40,9 @@
 <script>
     import picValidation from '../../components/login/picValidation.vue';
     import axios from 'axios';
+    import jsencrypt from 'jsencrypt';
+    import appconst from '../../lib/appconst';
+    import ajax from '../../lib/ajax';
     export default {
         data () {
             return {
@@ -59,13 +62,12 @@
                 },
                 picBlockShow: false,
                 sliderDragDistance: 0,
-                sliderFocus: false
+                sliderFocus: false,
+                token: "",
             }
         },
         created(){
-            axios.get('http://localhost:63661/api/check').then(function(response){
-                console.log(response.data);
-            });
+
         },
         methods: {
             handleSubmit(name) {
@@ -79,22 +81,36 @@
             },
             sliderUp(){
                 if(this.$store.state.sliderDragable){
-                    this.$store.commit('sliderDragable', false);
-                    if(this.$store.state.sliderDragDistance > 50){
-                        this.$store.commit("sliderValidation", 1);
-                    }else{
-                        this.$store.commit("sliderValidation", 2);
-                    }
-
                     let _this = this;
-                    setTimeout(function(){
-                        _this.sliderDragDistance = 0;
-                        _this.sliderFocus = false;
-                        _this.$store.commit('sliderDragDistance', 0);
-                        _this.$store.commit('sliderValidation', 0);
-                        _this.$refs.picValidation.picDraw();
-                        _this.$refs.picValidation.sliderBlur();
-                    }, 400);
+                    _this.$store.commit('sliderDragable', false);
+
+                    let encrypt = new jsencrypt();
+                    encrypt.setPublicKey(appconst.rsaPublicKey);
+                    const jsonData = {
+                        'x': _this.$store.state.sliderDragDistance,
+                        'token': _this.$store.state.token
+                    };
+
+                    let encryptData = encrypt.encrypt(JSON.stringify(jsonData));
+
+                    ajax.post('api/check', {
+                        params: encryptData
+                    }).then(function(response){
+                        if(response.data.code == 200){
+                            _this.$refs.picValidation.picBlockHidden();
+                            _this.$store.commit("sliderValidation", 1);
+                        }else{
+                            _this.$store.commit("sliderValidation", 2);
+                            setTimeout(function(){
+                                _this.sliderDragDistance = 0;
+                                _this.sliderFocus = false;
+                                _this.$store.commit('sliderDragDistance', 0);
+                                _this.$store.commit('sliderValidation', 0);
+                                _this.$refs.picValidation.picDraw();
+                                _this.$refs.picValidation.sliderBlur();
+                            }, 400);
+                        }
+                    });
                 }
             },
             sliderMove(event){
@@ -110,6 +126,7 @@
                 console.log(data);
                 this.sliderInitX = data;
             }
+
         },
         components: {
             picValidation
@@ -151,8 +168,6 @@
         left: 0px;
         z-index: 999;
     }
-
-
 
 </style>
 

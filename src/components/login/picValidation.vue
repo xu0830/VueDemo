@@ -1,8 +1,8 @@
 <template>
-    <div class="pic-validate-block" @mouseover="picBlockActive" @mouseout="picBlockBlur">
+    <div class="pic-validate-block" @mouseover="picBlockActive" @mouseout="picBlockHidden">
         <transition name="fade">
             <div class="pic-validate-box" v-show="picShow">
-                <span></span>
+                <span @click="picDraw"></span>
                 <canvas id="canvas_bot" class="pic-bottom" width="240" height="140"></canvas>
                 <canvas id="canvas_move" class="pic-move" width="240" height="140"></canvas>
             </div>
@@ -15,7 +15,7 @@
             <div class="slider-box" :class="[SliderStatus]" :style="{left: dragDistance + 'px'}"
                  @mouseover="sliderActive" @mouseout="sliderBlur"
                  @mousedown.stop.prevent="sliderClick">
-                <span class="slider-box-ctrl"></span>
+                <span></span>
             </div>
             <span></span>
         </div>
@@ -23,7 +23,8 @@
 </template>
 
 <script>
-    import imgs from "../../config/imgsBatchImport.js";
+    import imgs from "../../config/imgsBatchImport";
+    import ajax from "../../lib/ajax";
     export default {
         name: "picValidation",
         data: function(){
@@ -37,7 +38,7 @@
                 hiddenTimer: {}
             }
         },
-        props:['dragDistance'],
+        props:['dragDistance' ],
         created(){
             this.picDraw();
         },
@@ -73,13 +74,15 @@
         },
         methods: {
             picBlockActive(){
-                let _this = this;
-                clearTimeout(_this.hiddenTimer);
-                this.showTimer = setTimeout(function(){
-                    _this.picShow = true;
-                },300);
+                if(this.$store.state.sliderValidation != 1){
+                    let _this = this;
+                    clearTimeout(_this.hiddenTimer);
+                    this.showTimer = setTimeout(function(){
+                        _this.picShow = true;
+                    },300);
+                }
             },
-            picBlockBlur(){
+            picBlockHidden(){
                 if(this.$store.state.sliderDragable){
                     return;
                 }
@@ -101,56 +104,59 @@
                 this.$store.commit('sliderInitX', event.pageX);
                 this.$emit("child-event", event.pageX);
             },
+
             picDraw() {
                 var side = 14;
                 var radius = 7;
-                var sideLength = 2 * side + 0.5 * radius * (4 + 1.8);
-
-                var maxX = 250 - sideLength;
-                var minX = 2 * sideLength;
-
-                var maxY = 140 - sideLength;
-                var minY = radius + 0.5 * 1.8 * radius;
 
                 //拼图补全位置
-                this.randomX = 50;
-                this.randomY = 50;
 
                 let _this = this;
-                let img = new Image();
-                img.onload = function () {
-                    var canvas_bot = document.getElementById('canvas_bot').getContext('2d');
-                    canvas_bot.drawImage(img, 0, 0, 240, 140);
-                    canvas_bot.save();
-                    _this.drawJigsaw(canvas_bot, _this.randomX, _this.randomY, side, radius);
-                    canvas_bot.stroke();
-                    canvas_bot.clip();
-                    _this.imgData = canvas_bot.getImageData(_this.randomX, _this.randomY - radius * (1 + 0.5 * 1.8),
-                        2 * side + radius * (2 + 0.5 * 1.8),
-                        2 * side + radius * (2 + 0.5 * 1.8));
-                    canvas_bot.fillStyle = 'rgba(1, 1, 1, 0.92)';
-                    canvas_bot.fillRect(0, 0, 240, 140);
+                ajax.get('api/check').then(function(response){
+                    let data = response.data;
+                    if(data.code == 200){
+                        _this.$store.commit("randomPoint", data.data.point);
+                        _this.$store.commit("token", data.data.token);
+                        this.randomX = data.data.point.x;
+                        this.randomY = data.data.point.y;
+                        let img = new Image();
+                        img.onload = function () {
+                            var canvas_bot = document.getElementById('canvas_bot').getContext('2d');
+                            canvas_bot.drawImage(img, 0, 0, 240, 140);
+                            canvas_bot.save();
+                            _this.drawJigsaw(canvas_bot, _this.randomX, _this.randomY, side, radius);
+                            canvas_bot.stroke();
+                            canvas_bot.clip();
+                            _this.imgData = canvas_bot.getImageData(_this.randomX, _this.randomY - radius * (1 + 0.5 * 1.8),
+                                2 * side + radius * (2 + 0.5 * 1.8),
+                                2 * side + radius * (2 + 0.5 * 1.8));
+                            canvas_bot.fillStyle = 'rgba(1, 1, 1, 0.92)';
+                            canvas_bot.fillRect(0, 0, 240, 140);
 
-                    canvas_bot.restore();
+                            canvas_bot.restore();
 
-                    var canvas_move = document.getElementById('canvas_move').getContext('2d');
+                            var canvas_move = document.getElementById('canvas_move').getContext('2d');
 
-                    canvas_move.clearRect(0, 0, 240, 140);
+                            canvas_move.clearRect(0, 0, 240, 140);
 
-                    canvas_move.putImageData(_this.imgData, 1, _this.randomY - radius * (1 + 0.5 * 1.8));
-                    canvas_move.globalCompositeOperation = "destination-in";
-                    canvas_move.save();
+                            canvas_move.putImageData(_this.imgData, 1, _this.randomY - radius * (1 + 0.5 * 1.8));
+                            canvas_move.globalCompositeOperation = "destination-in";
+                            canvas_move.save();
 
-                    _this.drawJigsaw(canvas_move, 0, _this.randomY, side, radius);
-                    canvas_move.fill();
-                    canvas_move.clip();
-                    canvas_move.restore();
-                },
-                img.onerror = function(){
-                    console.log("load image error!");
-                }
-                let pic_index = Math.floor(Math.random() * 10);
-                img.src = imgs[pic_index];
+                            _this.drawJigsaw(canvas_move, 0, _this.randomY, side, radius);
+                            canvas_move.fill();
+                            canvas_move.clip();
+                            canvas_move.restore();
+                        },
+                            img.onerror = function(){
+                                console.log("load image error!");
+                            }
+                        let pic_index = Math.floor(Math.random() * 10);
+                        img.src = imgs[pic_index];
+                    }
+                });
+
+
             },
             drawJigsaw(canvasObj, randomX, randomY, side, radius) {
                 canvasObj.strokeStyle = "rgba(220, 220, 220, 0.97)";
@@ -199,6 +205,18 @@
         z-index: 999;
         overflow: hidden;
     }
+    .pic-validate-box span{
+        display: block;
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        width: 34px;
+        height: 34px;
+        background: url("../../assets/icons.png") 0 -460px no-repeat;
+        z-index: 999;
+        cursor: pointer;
+    }
+
     .pic-bottom{
         position: absolute;
         z-index: 2;
@@ -246,7 +264,7 @@
         left: 0px;
     }
 
-    .slider-box span.slider-box-ctrl{
+    .slider-box span{
         width: 16px;
         height: 12px;
         background: url('../../assets/icons.png') 0px -13px no-repeat;
@@ -261,6 +279,7 @@
     .slider-box-active{
         background: #1991fa;
         border: 1px solid #1991fa;
+        cursor: pointer;
     }
 
     .slider-box-correct{
@@ -272,15 +291,17 @@
         border: 1px solid #f57a7a;
     }
 
-    .slider-box-active span.slider-box-ctrl {
+
+
+    .slider-box-active span {
         background: url('../../assets/icons.png') 0px 0px no-repeat;
     }
 
-    .slider-box-correct span.slider-box-ctrl {
+    .slider-box-correct span {
         background: url('../../assets/icons.png') 0px -26px no-repeat;
     }
 
-    .slider-box-error span.slider-box-ctrl {
+    .slider-box-error span {
         background: url('../../assets/icons.png') 0px -68px no-repeat;
     }
 

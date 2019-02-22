@@ -9,7 +9,12 @@ const state = {
     sliderDragable: false,
     sliderInitX: 0,
     sliderDragDistance: 0,
-    sliderValidation: 0
+    sliderValidation: 0,
+    randomPoint: {
+        x: 0,
+        y: 0
+    },
+    token: ""
 };
 
 export default new Vuex.Store({

@@ -11,5 +11,12 @@ export default{
     },
     sliderValidation(state, type){
         state.sliderValidation = type;
+    },
+    randomPoint(state, point){
+        state.randomPoint.x = point.x;
+        state.randomPoint.y = point.y;
+    },
+    token(state, token){
+        state.token = token;
     }
 }
