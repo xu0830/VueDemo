@@ -2,8 +2,8 @@
     <div class="container" @mouseup="sliderUp" @mousemove="sliderMove">
         <div class="form-block">
             <Form ref="formInline" :model="formInline" :rules="ruleInline" :label-width="60">
-                <FormItem label="账户" prop="user">
-                    <Input type="text" v-model="formInline.user" placeholder="请输入用户名">
+                <FormItem label="账号" prop="user">
+                    <Input type="text" v-model="formInline.user" placeholder="请输入账号">
                     <Icon type="ios-person-outline" slot="prepend"></Icon>
                     </Input>
                 </FormItem>
@@ -12,8 +12,10 @@
                     <Icon type="ios-lock-outline" slot="prepend"></Icon>
                     </Input>
                 </FormItem>
-                <FormItem label="滑动验证" style="margin-bottom: 5px;">
+                <FormItem label="滑动验证" style="margin-bottom: 20px;">
                     <picValidation ref="picValidation" :dragDistance="sliderDragDistance"></picValidation>
+                    <div class="ivu-form-item-error-tip" v-show="validationError">请完成滑动验证</div>
+                    <div class="ivu-form-item-error-tip" v-show="loginError">请输入正确的账号或密码</div>
                 </FormItem>
                 <FormItem style="margin-bottom: 5px;">
                     <Row>
@@ -31,6 +33,7 @@
                 </FormItem>
                 <FormItem>
                     <Button type="primary" @click="handleSubmit('formInline')" long size="large">登录</Button>
+                    <span style="position: relative; left: 120px;">还没有账号？<a href="javascript:void(0)">免费注册</a></span>
                 </FormItem>
             </Form>
         </div>
@@ -51,9 +54,11 @@
                     password: '',
                     rememberMe: ''
                 },
+                validationError: false,
+                loginError: false,
                 ruleInline: {
                     user: [
-                        { required: true, message: '请输入用户名', trigger: 'blur' }
+                        { required: true, message: '请输入账号', trigger: 'blur' }
                     ],
                     password: [
                         { required: true, message: '请输入密码', trigger: 'blur' },
@@ -66,16 +71,45 @@
                 token: "",
             }
         },
-        created(){
+        computed:{
 
         },
+        created(){
+            console.log("login vue created");
+        },
+
         methods: {
             handleSubmit(name) {
+                let _this = this;
                 this.$refs[name].validate((valid) => {
                     if (valid) {
-                        this.$Message.success('Success!');
-                    } else {
-                        this.$Message.error('Fail!');
+                        _this.validationError = false;
+                        if(_this.$store.state.sliderValidation != 1){
+                            _this.validationError = true;
+                            return;
+                        }
+                        let encrypt = new jsencrypt();
+                        encrypt.setPublicKey(appconst.rsaPublicKey);
+                        const jsonData = {
+                            'userName': this.formInline.user,
+                            'password': this.formInline.password,
+                            'rememberMe': this.formInline.rememberMe
+                        };
+                        ajax.post('api/check/login', {
+                            params: encrypt.encrypt(JSON.stringify(jsonData))
+                        }).then(function(response){
+                            _this.loginError = false;
+                            let data = response.data;
+                            console.log(response.data);
+                            console.log(_this.formInline);
+                            if(data.code == 200){
+                                _this.$Message.success('登录成功!');
+                            }else{
+                                _this.formInline.password = "";
+                                _this.loginError = true;
+                            }
+                        });
+
                     }
                 })
             },
@@ -99,8 +133,10 @@
                         if(response.data.code == 200){
                             _this.$refs.picValidation.picBlockHidden();
                             _this.$store.commit("sliderValidation", 1);
+                            _this.validationError = false;
                         }else{
                             _this.$store.commit("sliderValidation", 2);
+                            _this.validationError = true;
                             setTimeout(function(){
                                 _this.sliderDragDistance = 0;
                                 _this.sliderFocus = false;
@@ -121,12 +157,6 @@
                     this.$refs.picValidation.moveJigsaw(distance < 0 ?  0 :  distance > 204 - 7 * 1.8 ? 204 - 7 * 1.8 : distance);
                 }
             },
-            getInitX(data){
-                console.log("childEvent");
-                console.log(data);
-                this.sliderInitX = data;
-            }
-
         },
         components: {
             picValidation
