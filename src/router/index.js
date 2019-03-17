@@ -15,7 +15,7 @@ const routers = [
             {
                 name: 'index',
                 path: 'index',
-                component: () => import('../views/home/main.vue')
+                component: () => import('../views/home/index.vue')
             }
         ]
     }
@@ -30,8 +30,6 @@ export const router = new VueRouter(RouterConfig);
 
 //  注册全局前置守卫
 router.beforeEach((to, from, next) => {
-    console.log("beforeEach");
-    console.log(to.name);
     if(to.name === 'login'){
         next({
             name: 'index'
