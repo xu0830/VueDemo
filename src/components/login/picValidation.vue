@@ -44,12 +44,12 @@
         },
         computed: {
             SliderStatus: function(){
-                if(this.$store.state.sliderValidation == 1){
+                if(this.$store.state.login.sliderValidation == 1){
                     return "slider-box-correct";
                 }
-                else if(this.$store.state.sliderValidation == 2){
+                else if(this.$store.state.login.sliderValidation == 2){
                     return "slider-box-error";
-                }else if(this.$store.state.sliderDragable || this.IsSliderFocus){
+                }else if(this.$store.state.login.sliderDragable || this.IsSliderFocus){
                     return "slider-box-active";
                 }
                 else{
@@ -57,24 +57,24 @@
                 }
             },
             sliderTipShow: function(){
-                return this.$store.state.sliderDragDistance > 0
+                return this.$store.state.login.sliderDragDistance > 0
             },
             sliderDragDistance: function(){
-                return this.$store.state.sliderDragDistance
+                return this.$store.state.login.sliderDragDistance
             },
             sliderDistanceBoxStatus: function(){
-                if(this.$store.state.sliderValidation == 0){
+                if(this.$store.state.login.sliderValidation == 0){
                     return "slider-distance-box-show";
-                }else if(this.$store.state.sliderValidation == 1){
+                }else if(this.$store.state.login.sliderValidation == 1){
                     return "slider-distance-box-correct";
-                }else if(this.$store.state.sliderValidation == 2){
+                }else if(this.$store.state.login.sliderValidation == 2){
                     return "slider-distance-box-error";
                 }
             }
         },
         methods: {
             picBlockActive(){
-                if(this.$store.state.sliderValidation != 1){
+                if(this.$store.state.login.sliderValidation != 1){
                     let _this = this;
                     clearTimeout(_this.hiddenTimer);
                     this.showTimer = setTimeout(function(){
@@ -83,7 +83,7 @@
                 }
             },
             picBlockHidden(){
-                if(this.$store.state.sliderDragable){
+                if(this.$store.state.login.sliderDragable){
                     return;
                 }
                 let _this = this;
@@ -100,8 +100,8 @@
                 this.IsSliderFocus = false;
             },
             sliderClick(event){
-                this.$store.commit('sliderDragable', true);
-                this.$store.commit('sliderInitX', event.pageX);
+                this.$store.commit('login/sliderDragable', true);
+                this.$store.commit('login/sliderInitX', event.pageX);
                 this.$emit("child-event", event.pageX);
             },
 
@@ -109,14 +109,13 @@
                 var side = 14;
                 var radius = 7;
 
-                //拼图补全位置
-
+                //拼图位置
                 let _this = this;
                 ajax.get('api/check').then(function(response){
                     let data = response.data;
                     if(data.code == 200){
-                        _this.$store.commit("randomPoint", data.data.point);
-                        _this.$store.commit("token", data.data.token);
+                        _this.$store.commit("login/randomPoint", data.data.point);
+                        _this.$store.commit("login/token", data.data.token);
                         _this.randomX = data.data.point.x;
                         _this.randomY = data.data.point.y;
                         let img = new Image();

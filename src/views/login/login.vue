@@ -46,6 +46,7 @@
     import jsencrypt from 'jsencrypt';
     import appconst from '../../lib/appconst';
     import ajax from '../../lib/ajax';
+    import { mapState } from 'vuex';
     export default {
         data () {
             return {
@@ -71,11 +72,10 @@
                 token: "",
             }
         },
-        computed:{
+        computed: {
 
         },
         created(){
-            console.log("login vue created");
         },
 
         methods: {
@@ -84,7 +84,7 @@
                 this.$refs[name].validate((valid) => {
                     if (valid) {
                         _this.validationError = false;
-                        if(_this.$store.state.sliderValidation != 1){
+                        if(_this.$store.state.login.sliderValidation != 1){
                             _this.validationError = true;
                             return;
                         }
@@ -114,15 +114,15 @@
                 })
             },
             sliderUp(){
-                if(this.$store.state.sliderDragable){
+                if(this.$store.state.login.sliderDragable){
                     let _this = this;
-                    _this.$store.commit('sliderDragable', false);
+                    _this.$store.commit('login/sliderDragable', false);
 
                     let encrypt = new jsencrypt();
                     encrypt.setPublicKey(appconst.rsaPublicKey);
                     const jsonData = {
-                        'x': _this.$store.state.sliderDragDistance,
-                        'token': _this.$store.state.token
+                        'x': _this.$store.state.login.sliderDragDistance,
+                        'token': _this.$store.state.login.token
                     };
 
                     let encryptData = encrypt.encrypt(JSON.stringify(jsonData));
@@ -132,16 +132,16 @@
                     }).then(function(response){
                         if(response.data.code == 200){
                             _this.$refs.picValidation.picBlockHidden();
-                            _this.$store.commit("sliderValidation", 1);
+                            _this.$store.commit("login/sliderValidation", 1);
                             _this.validationError = false;
                         }else{
-                            _this.$store.commit("sliderValidation", 2);
+                            _this.$store.commit("login/sliderValidation", 2);
                             _this.validationError = true;
                             setTimeout(function(){
                                 _this.sliderDragDistance = 0;
                                 _this.sliderFocus = false;
-                                _this.$store.commit('sliderDragDistance', 0);
-                                _this.$store.commit('sliderValidation', 0);
+                                _this.$store.commit('login/sliderDragDistance', 0);
+                                _this.$store.commit('login/sliderValidation', 0);
                                 _this.$refs.picValidation.picDraw();
                                 _this.$refs.picValidation.sliderBlur();
                             }, 400);
@@ -150,9 +150,9 @@
                 }
             },
             sliderMove(event){
-                if(this.$store.state.sliderDragable){
-                    this.$store.commit('sliderDragDistance', event.pageX);
-                    let distance = this.$store.state.sliderDragDistance;
+                if(this.$store.state.login.sliderDragable){
+                    this.$store.commit('login/sliderDragDistance', event.pageX);
+                    let distance = this.$store.state.login.sliderDragDistance;
                     this.sliderDragDistance = distance < 0 ? 0 : distance > 208 ?  208 : distance;
                     this.$refs.picValidation.moveJigsaw(distance < 0 ?  0 :  distance > 204 - 7 * 1.8 ? 204 - 7 * 1.8 : distance);
                 }

@@ -7,8 +7,6 @@ import iView from 'iview';
 import 'iview/dist/styles/iview.css';
 Vue.config.productionTip = false;
 
-console.log(router);
-
 Vue.use(iView);
 
 new Vue({
