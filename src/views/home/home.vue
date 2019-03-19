@@ -32,14 +32,14 @@
             <Layout>
                     <Header>
                         <Row type="flex" justify="end"  class="code-row-bg">
-                            <Col span="22">
+                            <Col span="21">
                                 <Breadcrumb>
                                     <BreadcrumbItem to="/">Home</BreadcrumbItem>
                                     <BreadcrumbItem to="/components/breadcrumb">Components</BreadcrumbItem>
                                     <BreadcrumbItem>Breadcrumb</BreadcrumbItem>
                                 </Breadcrumb>
                             </Col>
-                            <Col span="1">
+                            <Col span="1.5">
                                 <Dropdown style="margin-left: 20px">
                                     <a href="javascript:void(0)">
                                         用户名
@@ -50,7 +50,7 @@
                                     </DropdownMenu>
                                 </Dropdown>
                             </Col>
-                            <Col span="0.5">
+                            <Col span="1.5">
                                 <span class="avatar">
                                     <img src="../../assets/avatar.png" />
                                 </span>
@@ -92,7 +92,7 @@
     }
     .ivu-layout-header{
         background: #fff;
-        padding: 0 30px 0 0px;
+        padding: 0 30px 0 20px;
         border-bottom: 1px solid #e3e3e3;
     }
     .avatar {
