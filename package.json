@@ -8,7 +8,6 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "babel-core": "^5.8.38",
     "iview": "^3.2.2",
     "vue": "^2.5.22",
     "vue-router": "^3.0.2",
