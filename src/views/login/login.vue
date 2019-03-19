@@ -113,6 +113,7 @@
                     }
                 })
             },
+
             sliderUp(){
                 if(this.$store.state.login.sliderDragable){
                     let _this = this;
@@ -149,6 +150,7 @@
                     });
                 }
             },
+
             sliderMove(event){
                 if(this.$store.state.login.sliderDragable){
                     this.$store.commit('login/sliderDragDistance', event.pageX);

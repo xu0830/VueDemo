@@ -15,7 +15,37 @@ const routers = [
             {
                 name: 'index',
                 path: 'index',
-                component: () => import('../views/home/index.vue')
+                component: () => import('../components/home/index.vue')
+            }
+        ]
+    },
+    { path: '/app', name: 'app',
+        component: () => import('../views/home/home.vue'),
+        children: [
+            {
+                name: 'station',
+                path: 'station',
+                component: () => import('../components/app/station.vue')
+            },
+            {
+                name: 'others',
+                path: 'others',
+                component: () => import('../components/app/others.vue')
+            }
+        ]
+    },
+    { path: '/manageMenu', name: 'manageMenu',
+        component: () => import('../views/home/home.vue'),
+        children: [
+            {
+                name: 'users',
+                path: 'users',
+                component: () => import('../components/manageMenu/users.vue')
+            },
+            {
+                name: 'roles',
+                path: 'roles',
+                component: () => import('../components/manageMenu/roles.vue')
             }
         ]
     }

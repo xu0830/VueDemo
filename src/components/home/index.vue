@@ -1,6 +1,6 @@
 <template>
     <div>
-        main components
+        index component
     </div>
 </template>
 

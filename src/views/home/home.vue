@@ -1,31 +1,26 @@
 <template>
     <div class="layout">
         <Layout>
-                <!--<Breadcrumb :style="{margin: '16px 0'}">-->
-                    <!--<BreadcrumbItem>Home</BreadcrumbItem>-->
-                    <!--<BreadcrumbItem>Components</BreadcrumbItem>-->
-                    <!--<BreadcrumbItem>Layout</BreadcrumbItem>-->
-                <!--</Breadcrumb>--><Sider hide-trigger :style="{background: '#001529', height: '100vh'}">
+            <Sider hide-trigger :style="{background: '#001529', height: '100vh'}">
             <div style="height: 64px; line-height: 64px; color: #fff; background: #002140; padding-left: 35px;">
-                <h2>我的应用</h2>
+                <h2>我的网站</h2>
             </div>
             <Menu theme="dark" width="auto" :accordion="true" @on-select="menuSelect">
                 <Submenu name="1">
                     <template slot="title">
                         <Icon type="ios-navigate"></Icon>
-                        一级菜单
+                        应用
                     </template>
-                    <MenuItem name="1-1">选项 1</MenuItem>
-                    <MenuItem name="1-2">选项 2</MenuItem>
-                    <MenuItem name="1-3">选项 3</MenuItem>
+                    <MenuItem name="station">高铁订票</MenuItem>
+                    <MenuItem name="others">无</MenuItem>
                 </Submenu>
                 <Submenu name="2">
                     <template slot="title">
-                        <Icon type="ios-keypad"></Icon>
-                        一级菜单 2
+                        <Icon type="ios-settings" style="font-size: 14px;"></Icon>
+                        管理
                     </template>
-                    <MenuItem name="2-1">选项 1</MenuItem>
-                    <MenuItem name="2-2">选项 2</MenuItem>
+                    <MenuItem name="roles">权限</MenuItem>
+                    <MenuItem name="users">用户</MenuItem>
                 </Submenu>
             </Menu>
         </Sider>
@@ -34,9 +29,9 @@
                         <Row type="flex" justify="end"  class="code-row-bg">
                             <Col span="22">
                                 <Breadcrumb>
-                                    <BreadcrumbItem to="/">Home</BreadcrumbItem>
-                                    <BreadcrumbItem to="/components/breadcrumb">Components</BreadcrumbItem>
-                                    <BreadcrumbItem>Breadcrumb</BreadcrumbItem>
+                                    <BreadcrumbItem to="/">首页</BreadcrumbItem>
+                                    <BreadcrumbItem>1</BreadcrumbItem>
+                                    <BreadcrumbItem>2</BreadcrumbItem>
                                 </Breadcrumb>
                             </Col>
                             <Col span="1">
@@ -74,12 +69,37 @@
             return{
                 tab0: true,
                 tab1: true,
-                tab2: true
+                tab2: true,
+                currentPath: "",
+            }
+        },
+        created(){
+            console.log("home component created");
+            console.log(this.$store.state.home.routes);
+            this.$store.commit('home/initCachePage');
+        },
+        computed: {
+            currentPathArr(){
+                console.log(currentPathArr);
+                return currentPath.split("/")
+            }
+        },
+        watch:{
+            $route(to,from){
+                this.currentPath = to.path;
             }
         },
         methods: {
             menuSelect(name){
-                console.log("menuSelect" + name);
+                this.$router.push({
+                    name:name
+                });
+                console.log(this.$router);
+                this.$store.commit("home/setCurrentPageName", name);
+                this.$store.commit("home/pageOpenedList", name);
+            },
+            routeChange(to){
+                console.log(to);
             }
         }
     }
