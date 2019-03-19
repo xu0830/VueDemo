@@ -29,9 +29,7 @@
                         <Row type="flex" justify="end"  class="code-row-bg">
                             <Col span="21">
                                 <Breadcrumb>
-                                    <BreadcrumbItem to="/">首页</BreadcrumbItem>
-                                    <BreadcrumbItem>1</BreadcrumbItem>
-                                    <BreadcrumbItem>2</BreadcrumbItem>
+                                    <BreadcrumbItem v-for="item in currentPathArr" :key="item">{{item}}</BreadcrumbItem>
                                 </Breadcrumb>
                             </Col>
                             <Col span="1.5">
@@ -70,23 +68,34 @@
                 tab0: true,
                 tab1: true,
                 tab2: true,
-                currentPath: "",
+                currentPath: "home",
             }
         },
         created(){
-            console.log("home component created");
-            console.log(this.$store.state.home.routes);
-            this.$store.commit('home/initCachePage');
+            // this.$store.commit('home/initCachePage');
         },
         computed: {
             currentPathArr(){
-                console.log(currentPathArr);
-                return currentPath.split("/")
+                let _this = this;
+                let arr = [];
+                console.log(this.currentPath);
+                let i = 0;
+                this.currentPath.split("/").map(function(item){
+                    console.log("item " + item);
+                    arr.push(_this.localize(item));
+                });
+                console.log("i " + i);
+                console.log(arr);
+                return arr;
             }
         },
         watch:{
             $route(to,from){
-                this.currentPath = to.path;
+                if(to.path.indexOf("home") == -1){
+                    this.currentPath = "home" + to.path;
+                }else{
+                    this.currentPath = "home";
+                }
             }
         },
         methods: {
@@ -100,6 +109,23 @@
             },
             routeChange(to){
                 console.log(to);
+            },
+            localize(name){
+                if(name === "home"){
+                    return "首页"
+                }else if(name === "app"){
+                    return "应用";
+                }else if(name === "station"){
+                    return "高铁抢票";
+                }else if(name === "others"){
+                    return "无";
+                }else if(name === "manageMenu"){
+                    return "管理";
+                }else if(name === "roles"){
+                    return "权限";
+                }else if(name === "users"){
+                    return "用户";
+                }
             }
         }
     }

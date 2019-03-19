@@ -2,8 +2,9 @@
     <div class="tag-opended-container">
         <!--<Tag type="dot" color="blue"  >首页</Tag>-->
         <transition-group name="taglist-moving-animation">
-            <Tag v-for="item in pageOpenedList" type="dot" :closable="true"
+            <Tag v-for="item in pageOpenedList" type="dot"
                  :name="item" :key="item"
+                 :closable="item==='index'?false:true"
                  @on-close="closePage" @click.native="tagClick(item)" :color="item === currentPage? 'blue' : 'default'">
                 {{item}}
             </Tag>
@@ -20,6 +21,7 @@
         },
         computed: {
             pageOpenedList(){
+                console.log(this.$store.state.home.pageOpenedList);
                 return this.$store.state.home.pageOpenedList
             },
             currentPage(){
