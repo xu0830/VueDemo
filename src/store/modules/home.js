@@ -1,41 +1,102 @@
-import {router} from '../../router/index.js';
-console.log(router);
+import {homeRouter, appRouter, manageMenuRouter} from '../../router/router.js';
 const home = {
     namespaced: true,
     state: {
         cachePage: [],
-        pageOpenedList:["index"],
-        currentPage: "index",
-        currentPath: [{
-            meta: 'index',
-            title: "首页"
+        pageOpenedList:[
+        {
+            meta: {
+                title: '主页'
+            },
+            name: "index",
+            path: '/*'
         }],
-        routes: router.options
+        currentPage: "index",
+        currentPath: [
+        {
+            meta: {
+                title: '首页'
+            },
+            name: "home",
+            path: '/home'
+        },
+        {
+            meta: {
+                title: '主页'
+            },
+            name: "index",
+            path: '/index'
+        }],
+        routes: [
+            homeRouter,
+            appRouter,
+            manageMenuRouter
+        ]
     },
     mutations: {
         initCachePage(state){
 
         },
         setCurrentPageName(state, name){
-            console.log("setCurrentPageName: " + name);
             state.currentPage = name;
+            state.currentPath.length = 1;
+            state.routes.map(function(item){
+                item.children.map(function(route){
+                    if(route.name === name){
+                        if(route.name != "index"){
+                            let pathObj = {
+                                meta: {
+                                    title: ''
+                                },
+                                name: "",
+                                path: ''
+                            };
+                            pathObj.meta.title = item.meta.title;
+                            pathObj.name = item.name;
+                            pathObj.path = item.path;
+                            state.currentPath.push(pathObj);
+                        }
+                        let childPathObj = {
+                            meta: {
+                                title: ''
+                            },
+                            name: "",
+                            path: ''
+                        };
+                        childPathObj.meta.title = route.meta.title;
+                        childPathObj.name = route.name;
+                        childPathObj.path = route.path;
+                        state.currentPath.push(childPathObj);
+                    }
+                });
+            });
         },
         pageOpenedList(state, name){
-            let isExist = true;
-            state.pageOpenedList.map((item, index) => {
-                console.log("pageOpenedList: " + name);
-                if (item === name) {
-                    isExist = false;
+            let isExist = false;
+            state.pageOpenedList.map((item) => {
+                if (item.name === name) {
+                    isExist = true;
                 }
             });
-            console.log(state.pageOpenedList);
-            if(isExist){
-                state.pageOpenedList.push(name);
+            if(!isExist){
+                state.routes.map(function(route){
+                    route.children.map(function(child){
+                        if(child.name === name){
+                            state.pageOpenedList.push(child);
+                        }
+                    });
+                });
             }
         },
         closePage(state, name){
-            var index = state.pageOpenedList.indexOf(name);
-            state.pageOpenedList.splice(index, 1);
+            state.pageOpenedList.map(function(route, index){
+                if(route.name === name){
+                    state.pageOpenedList.splice(index, 1);
+
+                    return;
+                }
+            });
+
             // state.currentPage = state.pageOpenedList;
 
         }
