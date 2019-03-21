@@ -34,7 +34,7 @@
                             </Col>
                         </Row>
                     </Header>
-                <tag-pages-opened></tag-pages-opened>
+                <tag-pages-opened class="tag-pages-opened"></tag-pages-opened>
                 <Content class="page-content">
                     <div class="page-content-container">
                         <router-view></router-view>
@@ -108,18 +108,27 @@
     .ivu-layout-header{
         background: #fff;
         padding: 0 30px 0 40px;
-        box-shadow: 0 2px 1px 1px rgba(100, 100, 100, 0.1);
+        /*border-bottom: 1px solid #2d374b;*/
+        /*box-shadow: 0 2px 1px 1px rgba(100, 100, 100, 0.1);*/
+        height: 8vh;
+        line-height: 8vh;
+    }
 
+    .tag-pages-opened{
+        padding: 0 20px;
+        height: 4vh;
+        box-shadow: 2px 2px 5px rgba(0,0,0,.12), -2px -2px 5px rgba(0,0,0,.12);
     }
 
     .page-content{
         padding: 20px;
+        height: 82vh;
     }
 
     .page-content-container{
         background: #fff;
         width: 100%;
-        height: 720px;
+        height: 100%;
         box-sizing: border-box;
         border: 1px solid #rgba(100, 100, 100, 0.1);
         box-shadow: 2px 2px 5px rgba(0,0,0,.1), -2px -2px 5px rgba(0,0,0,.1);
@@ -130,5 +139,6 @@
         border: 1px solid rgba(100, 100, 100, 0.1);
         box-shadow: 2px 2px 5px rgba(0,0,0,.1), -2px -2px 5px rgba(0,0,0,.1);
         text-align: center;
+        height: 6vh;
     }
 </style>
