@@ -29,7 +29,7 @@
             </Col>
         </Row>
         <Row>
-            <Table border :columns="ticketColumn" :data="ticketData"></Table>
+            <Table border :columns="ticketColumn" :data="ticketData" :width="1357" size="large"></Table>
             <Page :total="100" prev-text="上一页" next-text="下一页" @on-change="pageChage" />
         </Row>
     </div>
@@ -57,12 +57,31 @@
                     {
                         title: '车次',
                         key: 'Station_train_code',
-                        width: 75
+                        width: 75,
+                        render: (h, params) => {
+                            return h('div', [
+                                h('Button', {
+                                    props: {
+                                        type: 'primary',
+                                        size: 'small'
+                                    },
+                                    style: {
+                                        marginRight: '5px'
+                                    },
+                                    on: {
+                                        click: () => {
+                                            console.log("ddd");
+                                            // this.show(params.index)
+                                        }
+                                    }
+                                }, params.row.Station_train_code)
+                            ]);
+                        }
                     },
                     {
                         title: '出发站',
                         key: 'From_station_name',
-                        width: 75
+                        width: 75,
                     },
                     {
                         title: '到达站',
@@ -101,12 +120,12 @@
                     {
                         title: '高级软卧',
                         key: 'Gr_num',
-                        width: 75
+                        width: 85
                     },
                     {
                         title: '软卧一等座',
                         key: 'Rw_num',
-                        width: 75
+                        width: 100
                     },
                     {
                         title: '动卧',
@@ -116,7 +135,7 @@
                     {
                         title: '硬卧二等卧',
                         key: 'Yw_num',
-                        width: 75
+                        width: 100
                     },
                     {
                         title: '软座',
@@ -141,25 +160,25 @@
                 ],
                 ticketData:[
                     {
-                        name: 'D7432',
+                        Station_train_code: 'D7432',
                         age: 18,
                         address: '01:28',
                         date: '01:28'
                     },
                     {
-                        name: 'D7432',
+                        Station_train_code: 'D7432',
                         age: 24,
                         address: '01:28',
                         date: '2016-10-01'
                     },
                     {
-                        name: 'D7432',
+                        Station_train_code: 'D7432',
                         age: 30,
                         address: '01:28',
                         date: '2016-10-02'
                     },
                     {
-                        name: 'Jon Snow',
+                        Station_train_code: 'D7432',
                         age: 26,
                         address: 'Ottawa No. 2 Lake Park',
                         date: '2016-10-04'

@@ -65,15 +65,14 @@
 </script>
 
 <style scoped>
-    .tag-opended-container{
-        position: relative;
-        width: 100%;
-        background: #f0f2f5;
-        box-sizing:border-box;
-        padding: 0px 20px;
-        border-bottom: 1px solid #e3e3e3;
-        box-shadow: 2px 2px 5px rgba(0,0,0,.1), -2px -2px 5px rgba(0,0,0,.1);
-    }
+    /*.tag-opended-container{*/
+        /*position: relative;*/
+        /*width: 100%;*/
+        /*background: #f0f2f5;*/
+        /*box-sizing:border-box;*/
+        /*padding: 0px 20px;*/
+        /*border-bottom: 1px solid #e3e3e3;*/
+    /*}*/
 
     .ivu-tag-dot{
         border-width: 2px!important;
