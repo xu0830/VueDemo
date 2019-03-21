@@ -1,7 +1,7 @@
 <template>
     <div class="component-content">
         <Row>
-            <Col span="5">
+            <Col :sm="3" span="4">
                 出发地
                 <AutoComplete
                         v-model="departurePlace"
@@ -11,7 +11,7 @@
                         style="width:200px"></AutoComplete>
 
             </Col>
-            <Col span="5">
+            <Col :sm="3" span="4">
                 目的地
                 <AutoComplete
                         v-model="destination"
@@ -20,7 +20,7 @@
                         placeholder="请输入目的地"
                         style="width:200px"></AutoComplete>
             </Col>
-            <Col span="4">
+            <Col span="3">
                 出发日期
                 <DatePicker type="date" :options="departureDate" placeholder="Select date" style="width: 200px"></DatePicker>
             </Col>
@@ -30,7 +30,7 @@
         </Row>
         <Row>
             <Table border :columns="ticketColumn" :data="ticketData"></Table>
-            <Page :total="100" prev-text="上一页" next-text="下一页" @on-change="pageChage" />
+            <Page :total="0" prev-text="上一页" next-text="下一页" @on-change="pageChage" />
         </Row>
     </div>
 </template>
@@ -210,4 +210,8 @@
     .ivu-page{
         margin-top: 10px;
     }
+    .ivu-auto-complete{
+        width: 100%!important;
+    }
+
 </style>
