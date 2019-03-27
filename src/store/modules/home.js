@@ -31,7 +31,10 @@ const home = {
             homeRouter,
             appRouter,
             manageMenuRouter
-        ]
+        ],
+        passenger:{
+            name: ''
+        }
     },
     mutations: {
         initCachePage(state){
@@ -99,6 +102,9 @@ const home = {
 
             // state.currentPage = state.pageOpenedList;
 
+        },
+        setPassenger(state, passenger){
+            state.passenger = passenger;
         }
     },
     actions: {

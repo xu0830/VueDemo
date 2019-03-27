@@ -1,0 +1,202 @@
+{
+    "Stations": [
+        {
+            "CNAbbr": "bji",
+            "CNName": "北京",
+            "Code": "BJP",
+            "Index": "0"
+        },
+        {
+            "CNAbbr": "sha",
+            "CNName": "上海",
+            "Code": "SHH",
+            "Index": "1"
+        },
+        {
+            "CNAbbr": "tji",
+            "CNName": "天津",
+            "Code": "TJP",
+            "Index": "2"
+        },
+        {
+            "CNAbbr": "cqi",
+            "CNName": "重庆",
+            "Code": "CQW",
+            "Index": "3"
+        },
+        {
+            "CNAbbr": "csh",
+            "CNName": "长沙",
+            "Code": "CSQ",
+            "Index": "4"
+        },
+        {
+            "CNAbbr": "cch",
+            "CNName": "长春",
+            "Code": "CCT",
+            "Index": "5"
+        },
+        {
+            "CNAbbr": "cdu",
+            "CNName": "成都",
+            "Code": "CDW",
+            "Index": "6"
+        },
+        {
+            "CNAbbr": "fzh",
+            "CNName": "福州",
+            "Code": "FZS",
+            "Index": "7"
+        },
+        {
+            "CNAbbr": "gzh",
+            "CNName": "广州",
+            "Code": "GZQ",
+            "Index": "8"
+        },
+        {
+            "CNAbbr": "gya",
+            "CNName": "贵阳",
+            "Code": "GIW",
+            "Index": "9"
+        },
+        {
+            "CNAbbr": "hht",
+            "CNName": "呼和浩特",
+            "Code": "HHC",
+            "Index": "10"
+        },
+        {
+            "CNAbbr": "heb",
+            "CNName": "哈尔滨",
+            "Code": "HBB",
+            "Index": "11"
+        },
+        {
+            "CNAbbr": "hfe",
+            "CNName": "合肥",
+            "Code": "HFH",
+            "Index": "12"
+        },
+        {
+            "CNAbbr": "hzh",
+            "CNName": "杭州",
+            "Code": "HZH",
+            "Index": "13"
+        },
+        {
+            "CNAbbr": "hko",
+            "CNName": "海口",
+            "Code": "VUQ",
+            "Index": "14"
+        },
+        {
+            "CNAbbr": "jna",
+            "CNName": "济南",
+            "Code": "JNK",
+            "Index": "15"
+        },
+        {
+            "CNAbbr": "kmi",
+            "CNName": "昆明",
+            "Code": "KMM",
+            "Index": "16"
+        },
+        {
+            "CNAbbr": "lsa",
+            "CNName": "拉萨",
+            "Code": "LSO",
+            "Index": "17"
+        },
+        {
+            "CNAbbr": "lzh",
+            "CNName": "兰州",
+            "Code": "LZJ",
+            "Index": "18"
+        },
+        {
+            "CNAbbr": "nni",
+            "CNName": "南宁",
+            "Code": "NNZ",
+            "Index": "19"
+        },
+        {
+            "CNAbbr": "nji",
+            "CNName": "南京",
+            "Code": "NJH",
+            "Index": "20"
+        },
+        {
+            "CNAbbr": "nch",
+            "CNName": "南昌",
+            "Code": "NCG",
+            "Index": "21"
+        },
+        {
+            "CNAbbr": "sya",
+            "CNName": "沈阳",
+            "Code": "SYT",
+            "Index": "22"
+        },
+        {
+            "CNAbbr": "sjz",
+            "CNName": "石家庄",
+            "Code": "SJP",
+            "Index": "23"
+        },
+        {
+            "CNAbbr": "tyu",
+            "CNName": "太原",
+            "Code": "TYV",
+            "Index": "24"
+        },
+        {
+            "CNAbbr": "wlq",
+            "CNName": "乌鲁木齐南",
+            "Code": "WMR",
+            "Index": "25"
+        },
+        {
+            "CNAbbr": "wha",
+            "CNName": "武汉",
+            "Code": "WHN",
+            "Index": "26"
+        },
+        {
+            "CNAbbr": "xni",
+            "CNName": "西宁",
+            "Code": "XNO",
+            "Index": "27"
+        },
+        {
+            "CNAbbr": "xan",
+            "CNName": "西安",
+            "Code": "XAY",
+            "Index": "28"
+        },
+        {
+            "CNAbbr": "ych",
+            "CNName": "银川",
+            "Code": "YIJ",
+            "Index": "29"
+        },
+        {
+            "CNAbbr": "zzh",
+            "CNName": "郑州",
+            "Code": "ZZF",
+            "Index": "30"
+        },
+        {
+            "CNAbbr": "szh",
+            "CNName": "深圳",
+            "Code": "SZQ",
+            "Index": "shenzhen"
+        },
+        {
+            "CNAbbr": "xme",
+            "CNName": "厦门",
+            "Code": "XMS",
+            "Index": "xiamen"
+        }
+    ]
+}

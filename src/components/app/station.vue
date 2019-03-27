@@ -1,14 +1,132 @@
 <template>
     <div class="component-content">
+        <Row>
+            <Collapse simple v-model="ticketInfoSelect" class="collapse-ticketInfo">
+                <Panel hide-arrow name="1" :style="{width: '1200px;'}">
+                    <span class="collapse-header-span">
+                        订票助手
+                        <Icon type="ios-arrow-dropdown" size="18" />
+                    </span>
+                    <div slot="content" class="collapse-content-div">
+                        <Row>
+                            <Col span="2">
+                                <!--<Button type="primary" @click="loginModalClick">-->
+                                    <!--登录12306-->
+                                <!--</Button>-->
+                            </Col>
+                        </Row>
+
+                        <Row>
+                            <Col span="8">
+                                <span class="collapse-content-title">乘车人: </span>
+                                <div class="collapse-content-item" v-show="isPassengerSelect">
+                                    <Button type="dashed" size="small" @click="loginModalClick">
+                                        请选择
+                                    </Button>
+                                </div>
+                                <div class="collapse-content-item" v-show="!isPassengerSelect">
+                                    <span class="collapse-content-span">{{currentPassenger.name}}</span>
+                                    <Button type="default" size="small" @click="loginModalClick">
+                                        重新选择
+                                    </Button>
+                                </div>
+                            </Col>
+                        </Row>
+
+                        <Row>
+                            <Col span="6">
+                                <span class="collapse-content-title">出发车站: </span>
+                                <Poptip placement="right" width="500" v-model="citySelectPoptip">
+                                    <Button type="dashed" size="small">
+                                        请选择
+                                    </Button>
+                                    <div class="api" slot="content">
+                                        <Input placeholder="请输入出发地" style="width:40%"/>
+                                        <Button type="info" style="margin-left: 15px;">确定</Button>
+                                        <Tabs :animated="false" size="small" @on-click="stationTabClick" style="width: 100%;">
+                                            <TabPane label="热门">
+                                                <div class="select-station-div">
+                                                    <Button type="text" v-for="item in favorite_station"
+                                                            @click="citySelectEvent(item)" :key="item.Index">
+                                                        {{item.CNName}}
+                                                    </Button>
+                                                </div>
+                                            </TabPane>
+                                            <TabPane v-for="item in letterSortStation" :label="item.title">
+                                                <div class="letter-station-div" v-for="stations in item.stationClass">
+                                                    <span style="color: #e96900; display: inline-block; padding-top: 12px; vertical-align: top;">{{stations.stations.slice((stationsPageIndex-1)*12, 12*stationsPageIndex).length>0 ? stations.title : ''}}</span>
+                                                    <div style="width: 95%; display: inline-block;">
+                                                        <Button v-for="station in stations.stations.slice((stationsPageIndex-1)*12, 12*stationsPageIndex)" type="text">
+                                                            {{station.CNName}}
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                                <div style="width: 100%; position: relative;">
+                                                    <Page size="small" :total="item.count" :page-size="12" @on-change="stationPageChange"></Page>
+                                                </div>
+                                            </TabPane>
+                                        </Tabs>
+                                    </div>
+                                </Poptip>
+                            </Col>
+                            <Col span="6">
+                                <span class="collapse-content-title">到达车站: </span>
+
+                            </Col>
+                        </Row>
+
+
+
+                        <Row>
+                            <Col span="8">
+                                <span class="collapse-content-title">优先车次: </span>
+                                <Button type="dashed" size="small">
+                                    请选择
+                                </Button>
+                            </Col>
+                        </Row>
+
+                        <Row>
+                            <Col span="8">
+                                <span class="collapse-content-title">优先席别: </span>
+                                <Button type="dashed" size="small">
+                                    请选择
+                                </Button>
+                            </Col>
+                        </Row>
+
+                        <Row>
+                            <Col span="8">
+                                <span class="collapse-content-title">备选日期: </span>
+                                <Button type="dashed" size="small">
+                                    请选择
+                                </Button>
+                            </Col>
+                        </Row>
+
+                        <Row>
+
+                            <Col span="8">
+                                <Button type="success">
+                                    <Icon type="ios-train" size="20"/>
+                                    订票
+                                </Button>
+                            </Col>
+                        </Row>
+                    </div>
+                </Panel>
+            </Collapse>
+        </Row>
+
         <!-- 车票查询条件 -->
         <Row class="content-row-header">
             <Col span="6">
                 <span class="col-title">出发地</span>
                 <AutoComplete
-                v-model="departurePlace.CNName"
-                :data="departurePlaceData"
-                @on-search="departurePlaceSearch"
-                placeholder="请输入出发地" style="width:70%"></AutoComplete>
+                        v-model="departurePlace.CNName"
+                        :data="departurePlaceData"
+                        @on-search="departurePlaceSearch"
+                        placeholder="请输入出发地" style="width:70%"></AutoComplete>
             </Col>
             <Col span="6">
                 <span class="col-title">目的地</span>
@@ -22,54 +140,35 @@
             <Col span="6">
                 <span class="col-title">出发日期</span>
                 <DatePicker type="date" :options="departureDateOption" placeholder="请选择出发日期"
-                    @on-change="departureDateSelect" style="width:70%" :editable="false">
+                            @on-change="departureDateSelect" style="width:70%" :editable="false">
                 </DatePicker>
             </Col>
             <Col span="3">
                 <Button type="primary" class="row-btn" :loading="ticketLoading" @click="TicketQuery">查询</Button>
             </Col>
         </Row>
-        <Row>
-            <Collapse simple v-model="ticketInfoSelect" class="collapse-ticketInfo">
-                <Panel hide-arrow name="1" >
-                    <span class="collapse-header-span">订票助手<Icon type="md-arrow-dropdown" size="24"/></span>
-                    <div slot="content" class="collapse-content-div">
-                        <Row>
-                            <Col span="2">
-                                <Button type="primary" @click="loginModalClick">
-                                    登录12306
-                                </Button>
-                            </Col span="2">
-                        </Row>
-                    </div>
-                </Panel>
-            </Collapse>
-        </Row>
         <!-- 车票信息 -->
         <Row class="content-row-table">
-            <Table :loading="ticketLoading" :columns="ticketColumn" :data="ticketVmData"
+            <Table :loading="ticketLoading" :columns="ticketColumn" :data="ticketTableData"
                    :border="false" width="1393"></Table>
-            <Page :total="ticketDataCount" prev-text="上一页" next-text="下一页" @on-change="pageChage" />
+            <Page :total="ticketDataCount"  prev-text="上一页" next-text="下一页" @on-change="ticketTablePageChange" />
         </Row>
 
         <!-- 登录对话框 -->
-        <Modal
-                v-model="loginModal"
+        <Modal v-model="loginModal"
                 title="登录你的12306账户"
                 :closable="false"
                 >
             <div style="padding: 0 50px;">
                 <Form ref="formInline" :model="formInline" :rules="ruleInline">
                     <FormItem prop="userName" label="账号">
-                        <Input type="text" v-model="formInline.userName" placeholder="请输入你的账号" style="width: 63%;">
+                        <Input type="text" v-model="formInline.userName" placeholder="请输入你的账号" style="width: 63%;"/>
                         <Icon type="ios-person-outline" slot="prepend"></Icon>
-                        </Input>
                     </FormItem>
                     <FormItem prop="password" label="密码">
                         <Input type="password" v-model="formInline.password" placeholder="请输入你的账号"
-                               style="width: 63%;">
+                               style="width: 63%;"/>
                         <Icon type="ios-lock-outline" slot="prepend"></Icon>
-                        </Input>
                     </FormItem>
                     <FormItem prop="picValidate">
                         <Badge v-for="(item, index) in picPointData" :count="index+1"
@@ -92,6 +191,7 @@
 
 <script>
     import stations from '../../lib/station.json'
+    import favoriteStation from '../../lib/favoritestation.json'
     import ajax from '../../lib/ajax';
     import _ from 'lodash';
     export default {
@@ -106,6 +206,7 @@
                 }
             };
             return {
+                citySelectPoptip: false,
                 loginLoading: false,
                 ticketInfoSelect: '0',
                 loginModal: false,
@@ -363,8 +464,19 @@
                         }
                     }
                 ],
-                pageIndex: 0,
-
+                ticketTablePageIndex: 0,
+                stationTabIndex: 0,
+                stationsPageIndex: 1,
+                orderAutoSubmitForm: {
+                    passenger:{
+                        name: ''
+                    },
+                    leftStation: {},
+                    ArriveStation:{},
+                    stationCode: {},
+                    seatType:{},
+                    leftDate:{}
+                },
                 formInline: {
                     userName: '',
                     password: ''
@@ -382,18 +494,76 @@
                 },
                 picPointData:[],
                 ticketData: [],
-                userToken: ''
+                userToken: '',
+                letterSortStation: [],
             }
         },
         computed: {
-            ticketVmData(){
-                return this.ticketData.slice(this.pageIndex*10, 10*this.pageIndex+10);
+            ticketTableData(){
+                return this.ticketData.slice(this.ticketTablePageIndex*10, 10*this.ticketTablePageIndex+10);
+            },
+            stationTabData(){
+
+
             },
             ticketDataCount(){
-                return this.ticketData.length
+                return this.ticketData.length;
+            },
+            isPassengerSelect(){
+                return this.$store.state.home.passenger.name == '';
+            },
+            favorite_station(){
+                return favoriteStation.Stations;
+            },
+            currentPassenger(){
+                return this.$store.state.home.passenger;
             }
         },
         created(){
+            console.log(favoriteStation);
+
+            let _this = this;
+
+            let sortStationTitle = ["ABCDE", "FGHIJ", "KLMNO", "PQRST", "UVWXYZ"];
+
+            for(let i=0; i<sortStationTitle.length; i++){
+                var obj = {
+                    title: sortStationTitle[i],
+                    stationClass: [],
+                    count: 0
+                };
+                for(let j=0; j<sortStationTitle[i].length; j++){
+                    obj.stationClass.push({
+                        title: sortStationTitle[i][j],
+                        stations: []
+                    });
+                }
+                this.letterSortStation.push(obj);
+            }
+
+            stations.Stations.map(function(item, index){
+                var firstChar = item.CNAbbr[0].toUpperCase();
+
+                var sortIndex = -1;
+                sortStationTitle.map(function(str, num){
+                    if(str.indexOf(firstChar) > -1){
+                        sortIndex = num;
+                        return false;
+                    }
+                });
+                // console.log(_this.letterSortStation[sortIndex][firstChar]);
+                _this.letterSortStation[sortIndex].stationClass.map(function(stationClass){
+                    if(stationClass.title === firstChar){
+                        stationClass.stations.push(item);
+                    }
+                });
+            });
+            _this.letterSortStation.map(function(item){
+                item.stationClass.map(function(stationClass){
+                    item.count = item.count < stationClass.stations.length ? stationClass.stations.length : item.count;
+                });
+            });
+            console.log(this.letterSortStation);
         },
         methods: {
             departurePlaceSearch (value) {
@@ -417,8 +587,11 @@
             departureDateSelect(date){
                 this.departureDate = date;
             },
-            pageChage(page){// 页码
-                this.pageIndex = page-1;
+            ticketTablePageChange(page){// 页码
+                this.ticketTablePageIndex = page-1;
+            },
+            stationPageChange(page){// 页码
+                this.stationsPageIndex = page;
             },
             TicketQuery(){
                 let _this = this;
@@ -509,10 +682,12 @@
                                     });
                                 }else{
                                     _this.loginModal = false;
+                                    _this.$store.commit('home/setPassenger', response.data.data);
                                     _this.$Message.success({
                                         content: "登录成功",
                                         duration: 3
                                     });
+
                                 }
                             });
 
@@ -541,6 +716,13 @@
                 }).then(function(response){
                     console.log(response);
                 });
+            },
+            citySelectEvent(item){
+                this.citySelectPoptip = false;
+                console.log(item);
+            },
+            stationTabClick(name){
+                this.stationsPageIndex = 1;
             }
         }
     }
@@ -555,7 +737,7 @@
         box-shadow: 0 2px 1px 1px rgba(100, 100, 100, 0.1);
     }
     .ivu-row{
-        margin: 20px 0;
+        margin: 10px 0;
     }
     .content-row-header{
         min-width: 800px;
@@ -571,18 +753,10 @@
         margin: 10px 10px 10px 0;
     }
 
-    .row-btn{
-        margin: 0 20px;
-    }
-
-    .ivu-badge{
-        /*position: absolute;*/
-        /*left: 10px;*/
-        /*top: 10px;*/
-    }
-
     .collapse-ticketInfo{
+        cursor: default;
         border: none;
+        width: 110px;
     }
 
     .collapse-header-span{
@@ -590,14 +764,56 @@
         height: 30px;
         line-height: 30px;
         padding: 0 10px;
-        background: #2b85e4;
+        background: #f90;
         color: #fff;
         border-radius: 4px;
         border: 1px solid transparent;
     }
 
     .collapse-content-div{
-        border-top: 1px solid transparent
+        width: 1300px;
+    }
+
+    .collapse-content-div .collapse-content-title{
+        margin-right: 20px;
+        display: inline-block;
+        width: 80px;
+        text-align: right;
+    }
+
+    .collapse-content-div .collapse-content-item{
+        display: inline-block;
+
+    }
+
+    .collapse-content-div .collapse-content-span{
+        /*padding: 1px 7px 2px;*/
+        font-size: 12px;
+        border-radius: 3px;
+        /*margin-right: 10px;*/
+    }
+
+    .select-station-div{
+        white-space:normal;
+        margin-top: 0px;
+    }
+
+    .ivu-tabs-bar{
+        margin: 0px;
+    }
+
+    .select-station-div button{
+        margin: 3px 3px;
+        width: 60px;
+        text-align: left;
+    }
+    .letter-station-div{
+        white-space:normal;
+    }
+
+    .letter-station-div button{
+        width: 60px;
+        margin: 3px 3px;
     }
 
 </style>
