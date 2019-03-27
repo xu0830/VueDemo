@@ -34,42 +34,90 @@
                         </Row>
 
                         <Row>
-                            <Col span="6">
+                            <Col span="5">
                                 <span class="collapse-content-title">出发车站: </span>
-                                <Poptip placement="right" width="500" v-model="citySelectPoptip">
-                                    <Button type="dashed" size="small">
-                                        请选择
-                                    </Button>
-                                    <div class="api" slot="content">
-                                        <Input placeholder="请输入出发地" style="width:40%"/>
-                                        <Button type="info" style="margin-left: 15px;">确定</Button>
-                                        <Tabs :animated="false" size="small" @on-click="stationTabClick" style="width: 100%;">
-                                            <TabPane label="热门">
-                                                <div class="select-station-div">
-                                                    <Button type="text" v-for="item in favorite_station"
-                                                            @click="citySelectEvent(item)" :key="item.Index">
-                                                        {{item.CNName}}
-                                                    </Button>
-                                                </div>
-                                            </TabPane>
-                                            <TabPane v-for="item in letterSortStation" :label="item.title">
-                                                <div class="letter-station-div" v-for="stations in item.stationClass">
-                                                    <span style="color: #e96900; display: inline-block; padding-top: 12px; vertical-align: top;">{{stations.stations.slice((stationsPageIndex-1)*12, 12*stationsPageIndex).length>0 ? stations.title : ''}}</span>
-                                                    <div style="width: 95%; display: inline-block;">
-                                                        <Button v-for="station in stations.stations.slice((stationsPageIndex-1)*12, 12*stationsPageIndex)" type="text">
-                                                            {{station.CNName}}
+                                <div class="collapse-content-item" v-if="isAutoOrderLeftStationSelect">
+                                    <Poptip placement="right" width="490" v-model="citySelectPoptip">
+                                        <Button type="dashed" size="small">
+                                            请选择
+                                        </Button>
+                                        <div class="api select-station-div" slot="content">
+                                            <Input placeholder="请输入出发地" style="width:40%" v-model="orderAutoSubmitForm.isLeftStationInput" @on-change="leftStationInput"/>
+                                            <Button type="info" style="margin-left: 15px;">确定</Button>
+                                            <Tabs v-if="!orderAutoSubmitForm.isLeftStationInput" :animated="false" size="small" @on-click="stationTabClick" style="width: 100%;">
+                                                <TabPane label="热门">
+                                                    <div>
+                                                        <Button type="text" size="small" v-for="item in favorite_station"
+                                                                @click="citySelectEvent(item)" :key="item.Index">
+                                                            {{item.CNName}}
                                                         </Button>
                                                     </div>
-                                                </div>
-                                                <div style="width: 100%; position: relative;">
-                                                    <Page size="small" :total="item.count" :page-size="12" @on-change="stationPageChange"></Page>
-                                                </div>
-                                            </TabPane>
-                                        </Tabs>
-                                    </div>
-                                </Poptip>
+                                                </TabPane>
+                                                <TabPane v-for="item in letterSortStation" :label="item.title">
+                                                    <div v-for="stations in item.stationClass">
+                                                        <span v-if="stations.stations.slice((stationsPageIndex-1)*12, 12*stationsPageIndex).length>0"
+                                                              style="color: #e96900; display: inline-block; margin-top: 7px; vertical-align: top;">
+                                                            {{stations.stations.slice((stationsPageIndex-1)*12, 12*stationsPageIndex).length>0 ? stations.title : ''}}
+                                                        </span>
+                                                        <div v-if="stations.stations.slice((stationsPageIndex-1)*12, 12*stationsPageIndex).length>0"
+                                                             style="width: 95%; display: inline-block;">
+                                                            <Button  @click="citySelectEvent(item)" size="small" type="text"
+                                                                     v-for="station in stations.stations.slice((stationsPageIndex-1)*12, 12*stationsPageIndex)">
+                                                                {{station.CNName}}
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                    <div style="width: 100%; position: relative;">
+                                                        <Page size="small" :total="item.count" :page-size="12" @on-change="stationPageChange"></Page>
+                                                    </div>
+                                                </TabPane>
+                                            </Tabs>
+                                            <div v-if="orderAutoSubmitForm.isLeftStationInput" class="search-station-div" style="height: 230px;">
+                                                <Button v-for="item in stationSearchData" type="text" size="small">
+                                                    {{item.CNName}}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </Poptip>
+                                </div>
+                                <div class="collapse-content-item" v-if="!isAutoOrderLeftStationSelect">
+                                    <span class="collapse-content-span">{{orderAutoSubmitForm.leftStation.CNName}}</span>
+                                    <Poptip v-show="true" placement="right" width="490" v-model="citySelectPoptip">
+                                        <Button type="dashed" size="small">
+                                            重新选择
+                                        </Button>
+                                        <div class="api" slot="content">
+                                            <Input placeholder="请输入出发地" style="width:40%" v-model="orderAutoSubmitForm.isLeftStationInput" @on-change="leftStationInput"/>
+                                            <Button type="info" style="margin-left: 15px;">确定</Button>
+                                            <Tabs :animated="false" size="small" @on-click="stationTabClick" style="width: 100%;">
+                                                <TabPane label="热门">
+                                                    <div>
+                                                        <Button type="text" size="small" v-for="item in favorite_station"
+                                                                @click="citySelectEvent(item)" :key="item.Index">
+                                                            {{item.CNName}}
+                                                        </Button>
+                                                    </div>
+                                                </TabPane>
+                                                <TabPane v-for="item in letterSortStation" :label="item.title">
+                                                    <div v-for="stations in item.stationClass">
+                                                        <span v-show="stations.stations.slice((stationsPageIndex-1)*12, 12*stationsPageIndex).length>0" style="color: #e96900; display: inline-block; padding-top: 12px; vertical-align: top;">{{stations.stations.slice((stationsPageIndex-1)*12, 12*stationsPageIndex).length>0 ? stations.title : ''}}</span>
+                                                        <div v-show="stations.stations.slice((stationsPageIndex-1)*12, 12*stationsPageIndex).length>0" style="width: 95%; display: inline-block;">
+                                                            <Button  @click="citySelectEvent(item)" size="small" v-for="station in stations.stations.slice((stationsPageIndex-1)*12, 12*stationsPageIndex)" type="text">
+                                                                {{station.CNName}}
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                    <div style="width: 100%; position: relative;">
+                                                        <Page size="small" :total="item.count" :page-size="12" @on-change="stationPageChange"></Page>
+                                                    </div>
+                                                </TabPane>
+                                            </Tabs>
+                                        </div>
+                                    </Poptip>
+                                </div>
                             </Col>
-                            <Col span="6">
+
+                            <Col span="5">
                                 <span class="collapse-content-title">到达车站: </span>
 
                             </Col>
@@ -105,7 +153,6 @@
                         </Row>
 
                         <Row>
-
                             <Col span="8">
                                 <Button type="success">
                                     <Icon type="ios-train" size="20"/>
@@ -471,7 +518,10 @@
                     passenger:{
                         name: ''
                     },
-                    leftStation: {},
+                    leftStation: {
+                        CNName: ''
+                    },
+                    isLeftStationInput: '',
                     ArriveStation:{},
                     stationCode: {},
                     seatType:{},
@@ -502,15 +552,25 @@
             ticketTableData(){
                 return this.ticketData.slice(this.ticketTablePageIndex*10, 10*this.ticketTablePageIndex+10);
             },
-            stationTabData(){
-
-
+            stationSearchData(){
+                let stationArr = [];
+                let _this = this;
+                console.log(_this.orderAutoSubmitForm.isLeftStationInput);
+                stations.Stations.map(function(item){
+                    if(item.CNName.indexOf(_this.orderAutoSubmitForm.isLeftStationInput) > -1){
+                        stationArr.push(item);
+                    }
+                });
+                return stationArr;
             },
             ticketDataCount(){
                 return this.ticketData.length;
             },
             isPassengerSelect(){
                 return this.$store.state.home.passenger.name == '';
+            },
+            isAutoOrderLeftStationSelect(){
+                return this.orderAutoSubmitForm.leftStation.CNName == '';
             },
             favorite_station(){
                 return favoriteStation.Stations;
@@ -520,8 +580,6 @@
             }
         },
         created(){
-            console.log(favoriteStation);
-
             let _this = this;
 
             let sortStationTitle = ["ABCDE", "FGHIJ", "KLMNO", "PQRST", "UVWXYZ"];
@@ -708,7 +766,7 @@
             pointDataRemove(obj){
                 _.remove(this.picPointData, obj);
 
-                //解决lodash.remove非响应式问题
+                //解决lodash.remove函数非响应式问题
                 this.picPointData.sort();
             },
             userDtoBtn(){
@@ -719,10 +777,14 @@
             },
             citySelectEvent(item){
                 this.citySelectPoptip = false;
+                this.orderAutoSubmitForm.leftStation = item;
                 console.log(item);
             },
             stationTabClick(name){
                 this.stationsPageIndex = 1;
+            },
+            leftStationInput(){
+                console.log("input");
             }
         }
     }
@@ -791,29 +853,18 @@
         font-size: 12px;
         border-radius: 3px;
         /*margin-right: 10px;*/
+        display: inline-block;
+        width: 70px;
+        text-align: center;
     }
 
     .select-station-div{
-        white-space:normal;
-        margin-top: 0px;
-    }
-
-    .ivu-tabs-bar{
-        margin: 0px;
+        white-space: normal;
     }
 
     .select-station-div button{
         margin: 3px 3px;
         width: 60px;
-        text-align: left;
-    }
-    .letter-station-div{
-        white-space:normal;
-    }
-
-    .letter-station-div button{
-        width: 60px;
-        margin: 3px 3px;
     }
 
 </style>

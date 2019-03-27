@@ -289,13 +289,6 @@
         },
         {
             "CNAbbr": "hkd",
-            "CNName": "海  口东",
-            "Code": "KEQ",
-            "CNPhoneticAlpha": "haikoudong",
-            "Index": "41"
-        },
-        {
-            "CNAbbr": "hkd",
             "CNName": "海口东",
             "Code": "HMQ",
             "CNPhoneticAlpha": "haikoudong",
