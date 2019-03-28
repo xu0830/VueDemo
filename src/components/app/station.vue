@@ -21,9 +21,9 @@
                             <Col span="8">
                                 <span class="collapse-content-title">乘车人: </span>
                                 <div class="collapse-content-item">
-                                    <span v-if="!isPassengerSelect" class="collapse-content-span">{{currentPassenger.name}}</span>
+                                    <span v-if="currentPassenger.name != ''" class="collapse-content-span">{{currentPassenger.name}}</span>
                                     <Button type="dashed" size="small" @click="loginModalClick">
-                                        {{ !isPassengerSelect? "重新选择" : "请选择" }}
+                                        {{ currentPassenger.name != ''? "重新选择" : "请选择" }}
                                     </Button>
                                 </div>
                             </Col>
@@ -97,7 +97,7 @@
                                 <span class="collapse-content-title">到达车站: </span>
                                 <div class="collapse-content-item">
                                     <span class="collapse-content-span" v-if="orderAutoSubmitForm.arriveStation.CNName != ''">{{orderAutoSubmitForm.arriveStation.CNName}}</span>
-                                    <Poptip placement="right" width="490" v-model="arriveStationSelectPoptip" @on-popper-show="orderAutoSubmitForm.ruleInline.arriveStationError=false">
+                                    <Poptip placement="right" width="480" v-model="arriveStationSelectPoptip" @on-popper-show="orderAutoSubmitForm.ruleInline.arriveStationError=false">
                                         <Button type="dashed" size="small">
                                             {{ orderAutoSubmitForm.arriveStation.CNName != ''? "重新选择" : "请选择" }}
                                         </Button>
@@ -141,7 +141,7 @@
                                             <div v-if="orderAutoSubmitForm.arriveStationSearch.arriveStationInput" class="search-station-div" style="">
                                                 <div v-if="arriveStationSearchData.length > 0">
                                                     <Button v-for="item in arriveStationSearchData.slice((orderAutoSubmitForm.arriveStationSearch.pageIndex-1)*36, orderAutoSubmitForm.arriveStationSearch.pageIndex*36)"
-                                                            type="text" size="small"  @click="arriveStationSelectEvent(station)">
+                                                            type="text" size="small"  @click="arriveStationSelectEvent(item)">
                                                         {{item.CNName}}
                                                     </Button>
                                                     <Page :total="arriveStationSearchData.length" :page-size="36" size="small" onchange=""></Page>
@@ -165,17 +165,17 @@
                                     <span class="collapse-content-span" v-if="orderAutoSubmitForm.leftDate.date != ''">
                                         {{orderAutoSubmitForm.leftDate.date}}
                                     </span>
-                                    <Poptip placement="right" width="350" word-wrap @on-popper-show="orderAutoSubmitForm.ruleInline.leftDateError=false"
+                                    <Poptip placement="right" width="275" word-wrap @on-popper-show="orderAutoSubmitForm.ruleInline.leftDateError=false"
                                             v-model="leftDateSelectPoptip">
                                         <Button type="dashed" size="small">
                                             {{orderAutoSubmitForm.leftDate.date == '' ? '请选择': '重新选择'}}
                                         </Button>
                                         <div class="api select-content-div" slot="content" >
-                                            <span>
+                                            <span style="diplay: inline-block; width: 90px; margin: 0px 15px 0px 15px">
                                                 出发日期
                                             </span>
-                                            <DatePicker  style="width: 50%; height: 300px;" class="left-date-picker"  type="date"
-                                                        placement="bottom-start" @on-change="leftDateChangeEvent"
+                                            <DatePicker style="width: 60%; height: 300px;" class="left-date-picker"  type="date"
+                                                        placement="bottom-start" @on-change="leftDateChangeEvent" :editable="false"
                                                         :transfer="false" :options="departureDateOption" placeholder="请选择出发日期" open>
                                             </DatePicker>
                                         </div>
@@ -222,9 +222,24 @@
                         <Row>
                             <Col span="8">
                                 <span class="collapse-content-title">席别: </span>
-                                <Button type="dashed" size="small">
-                                    请选择
-                                </Button>
+                                <Poptip placement="right" width="300" word-wrap>
+                                    <Button type="dashed" size="small">
+                                        请选择
+                                    </Button>
+                                    <div slot="content" class="api">
+                                        <Button type="text" size="small">
+                                            一等座
+                                        </Button>
+                                        <Button type="text" size="small">
+                                            二等座
+                                        </Button>
+                                        <Button type="text" size="small">
+                                            无座
+                                        </Button>
+                                    </div>
+                                </Poptip>
+
+
                             </Col>
                         </Row>
 
@@ -304,11 +319,18 @@
                         <Icon type="ios-lock-outline" slot="prepend"></Icon>
                     </FormItem>
                     <FormItem prop="picValidate">
-                        <Badge v-for="(item, index) in picPointData" :count="index+1"
-                               @click.native="pointDataRemove(item)"
-                               :style="{position: 'absolute!important', display: 'inline-block', left: item.x + 'px', top: item.y + 'px', zIndex: '3'}"></Badge>
-                        <!--<Badge :count="5" type="primary" :style="{position: 'absolute!important',left: '10px;', top: '10px'}"></Badge>-->
-                        <img :src="validatePicUrl" @click="picClickEvent">
+                        <div style="width: 300px; position: relative; height: 200px;">
+                            <Badge v-for="(item, index) in picPointData" :count="index+1"
+                                   @click.native="pointDataRemove(item)"
+                                   :style="{position: 'absolute!important', display: 'inline-block', left: item.x + 'px', top: item.y + 'px', zIndex: '3'}"></Badge>
+                            <!--<Badge :count="5" type="primary" :style="{position: 'absolute!important',left: '10px;', top: '10px'}"></Badge>-->
+                            <img :src="validatePicUrl" @click="picClickEvent">
+                            <Spin fix v-if="validateImgLoading">
+                                <Icon type="ios-loading" size=18 class="validate-image-load"></Icon>
+                                <div>加载中...</div>
+                            </Spin>
+
+                        </div>
                     </FormItem>
                 </Form>
             </div>
@@ -343,7 +365,7 @@
                 arriveStationSelectPoptip: false,
                 leftDateSelectPoptip: false,
                 trainCodeSelectPoptip: false,
-
+                validateImgLoading: false,
                 loginLoading: false,
                 ticketInfoSelect: '1',
                 loginModal: false,
@@ -689,9 +711,6 @@
             ticketDataCount(){
                 return this.ticketData.length;
             },
-            isPassengerSelect(){
-                return this.$store.state.home.passenger.name == '';
-            },
             favorite_station(){
                 return favoriteStation.Stations;
             },
@@ -826,9 +845,11 @@
             },
             loginModalClick(){
                 let _this = this;
+                this.validateImgLoading = true;
                 this.loginModal = true;
                 ajax.post('api/Station/getValidateImage', {
                 }).then(function(response){
+                    _this.validateImgLoading = false;
                     _this.validatePicUrl = response.data.data.imgUrl;
                     _this.userToken = response.data.data.token;
                 });
@@ -862,20 +883,35 @@
                                         content: "登录失败！" +　response.data.result,
                                         duration: 3
                                     });
+                                    _this.validateImgLoading = true;
                                     ajax.post('api/Station/getValidateImage', {
                                     }).then(function(response){
+                                        _this.validateImgLoading = true;
                                         _this.validatePicUrl = response.data.data.imgUrl;
                                         _this.userToken = response.data.data.token;
+                                    }).catch(function(error){
+                                        _this.validateImgLoading = true;
+                                        _this.$Message.error({
+                                            content: '获取验证码异常',
+                                            duration: 1.5
+                                        });
                                     });
-                                }else{
-                                    _this.loginModal = false;
+                                }
+                                else{
                                     _this.$store.commit('home/setPassenger', response.data.data);
+                                    _this.loginModal = false;
                                     _this.$Message.success({
                                         content: "登录成功",
-                                        duration: 3
+                                        duration: 1.5
                                     });
 
                                 }
+                            }).catch(function(error){
+                                _this.loginLoading = false;
+                                _this.$Message.error({
+                                    content: '登录异常',
+                                    duration:1.5
+                                });
                             });
                         }
                     }
@@ -1004,7 +1040,7 @@
                 });
             },
             trainCodeDataPageChange(page){
-                _this.orderAutoSubmitForm.trainCode.pageIndex = page;
+                this.orderAutoSubmitForm.trainCode.pageIndex = page;
             },
             trainCodeSelectEvent(item){
                 this.trainCodeSelectPoptip = false;
@@ -1112,6 +1148,16 @@
     .select-train-div button{
         width: 120px;
         margin-right: 20px;
+    }
+
+    .validate-image-load{
+        animation: ani-spin 1s linear infinite;
+    }
+
+    @keyframes ani-spin {
+        from { transform: rotate(0deg);}
+        50%  { transform: rotate(180deg);}
+        to   { transform: rotate(360deg);}
     }
 
 </style>
