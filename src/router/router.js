@@ -1,5 +1,5 @@
 export const loginRouter = {
-    path: '/',
+    path: '/login',
     name: 'login',
     meta: {
         title: '登录'
@@ -8,7 +8,7 @@ export const loginRouter = {
 };
 
 export const homeRouter = {
-    path: '/home',
+    path: '/',
     name: 'home',
     meta: { title: '首页' },
     component: () => import('../views/home/home.vue'),
@@ -24,7 +24,7 @@ export const homeRouter = {
      ]
 };
 
-export const appRouter = {
+export const appRouter = [{
     path: '/app',
     name: 'app',
     meta: { title: '应用' },
@@ -42,14 +42,14 @@ export const appRouter = {
             meta: {
                 title: '其他'
             },
-            name: 'others',
-            path: 'others',
-            component: () => import('../components/app/others.vue')
+            name: 'other',
+            path: 'other',
+            component: () => import('../components/app/other.vue')
         }
     ]
-};
+}];
 
-export const manageMenuRouter = {
+export const manageMenuRouter = [{
     path: '/manageMenu',
     name: 'manageMenu',
     meta: { title: '管理' },
@@ -72,12 +72,12 @@ export const manageMenuRouter = {
             component: () => import('../components/manageMenu/roles.vue')
         }
     ]
-};
+}];
 
 export const routes = [
     loginRouter,
     homeRouter,
-    appRouter,
-    manageMenuRouter
+    ...appRouter,
+    ...manageMenuRouter
 ];
 

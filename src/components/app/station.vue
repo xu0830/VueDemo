@@ -1,21 +1,14 @@
-<template>
+﻿<template>
     <div class="component-content">
         <Row>
-            <Collapse simple v-model="ticketInfoSelect" class="collapse-ticketInfo">
+            <Collapse simple accordion v-model="ticketInfoSelect" class="collapse-ticketInfo">
                 <Panel hide-arrow name="1" :style="{width: '1200px;'}">
                     <span class="collapse-header-span">
                         订票助手
-                        <Icon  v-if="ticketInfoSelect[0] != 1" type="ios-arrow-dropdown" size="18" />
-                        <Icon v-if="ticketInfoSelect[0] == 1" type="ios-arrow-dropup" size="18" />
+                        <Icon  v-if="ticketInfoSelect[0] != '1'" type="ios-arrow-dropdown" size="18" />
+                        <Icon v-if="ticketInfoSelect[0] == '1'" type="ios-arrow-dropup" size="18" />
                     </span>
                     <div slot="content" class="collapse-content-div">
-                        <Row>
-                            <Col span="2">
-                                <!--<Button type="primary" @click="loginModalClick">-->
-                                    <!--登录12306-->
-                                <!--</Button>-->
-                            </Col>
-                        </Row>
                         <!-- 乘车人 -->
                         <Row>
                             <Col span="8">
@@ -35,7 +28,7 @@
                                 <span class="collapse-content-title">出发车站: </span>
                                 <div class="collapse-content-item">
                                     <span class="collapse-content-span"  v-if="orderAutoSubmitForm.leftStation.CNName != ''">{{orderAutoSubmitForm.leftStation.CNName}}</span>
-                                    <Poptip placement="right" width="490" v-model="leftStationSelectPoptip" @on-popper-show="orderAutoSubmitForm.ruleInline.leftStationError=false">
+                                    <Poptip placement="right" width="490" v-model="poptipModels.leftStation" @on-popper-show="orderAutoSubmitForm.ruleInline.leftStationError=false">
                                         <Button type="dashed" size="small">
                                             {{ orderAutoSubmitForm.leftStation.CNName != ''? "重新选择" : "请选择" }}
                                         </Button>
@@ -52,7 +45,7 @@
                                                 <TabPane label="热门">
                                                     <div>
                                                         <Button type="text" size="small" v-for="item in favorite_station"
-                                                                @click="leftStationSelectEvent(item)" :key="item.Index">
+                                                                @click="stationSelectEvent(item)" :key="item.Index">
                                                             {{item.CNName}}
                                                         </Button>
                                                     </div>
@@ -65,7 +58,7 @@
                                                         </span>
                                                         <div v-if="stations.stations.slice((leftStationPageIndex-1)*12, 12*leftStationPageIndex).length>0"
                                                              style="width: 96%; display: inline-block;">
-                                                            <Button  @click="leftStationSelectEvent(station)" size="small" type="text"
+                                                            <Button  @click="stationSelectEvent(station)" size="small" type="text"
                                                                      v-for="station in stations.stations.slice((leftStationPageIndex-1)*12, 12*leftStationPageIndex)">
                                                                 {{station.CNName}}
                                                             </Button>
@@ -79,7 +72,7 @@
                                             <div v-if="orderAutoSubmitForm.leftStationSearch.leftStationInput" class="search-station-div" style="">
                                                 <div v-if="leftStationSearchData.length > 0">
                                                     <Button v-for="item in leftStationSearchData.slice((orderAutoSubmitForm.leftStationSearch.pageIndex-1)*36, orderAutoSubmitForm.leftStationSearch.pageIndex*36)"
-                                                            @click="leftStationSelectEvent(item)" type="text" size="small">
+                                                            @click="stationSelectEvent(item)" type="text" size="small">
                                                         {{item.CNName}}
                                                     </Button>
                                                     <Page :total="leftStationSearchData.length" :page-size="36" size="small" onchange=""></Page>
@@ -97,7 +90,7 @@
                                 <span class="collapse-content-title">到达车站: </span>
                                 <div class="collapse-content-item">
                                     <span class="collapse-content-span" v-if="orderAutoSubmitForm.arriveStation.CNName != ''">{{orderAutoSubmitForm.arriveStation.CNName}}</span>
-                                    <Poptip placement="right" width="480" v-model="arriveStationSelectPoptip" @on-popper-show="orderAutoSubmitForm.ruleInline.arriveStationError=false">
+                                    <Poptip placement="right" width="480" v-model="poptipModels.arriveStation" @on-popper-show="orderAutoSubmitForm.ruleInline.arriveStationError=false">
                                         <Button type="dashed" size="small">
                                             {{ orderAutoSubmitForm.arriveStation.CNName != ''? "重新选择" : "请选择" }}
                                         </Button>
@@ -114,7 +107,7 @@
                                                 <TabPane label="热门">
                                                     <div>
                                                         <Button type="text" size="small" v-for="item in favorite_station"
-                                                                @click="arriveStationSelectEvent(item)" :key="item.Index">
+                                                                @click="stationSelectEvent(item)" :key="item.Index">
                                                             {{item.CNName}}
                                                         </Button>
                                                     </div>
@@ -127,7 +120,7 @@
                                                         </span>
                                                         <div v-if="stations.stations.slice((arriveStationPageIndex-1)*12, 12*arriveStationPageIndex).length>0"
                                                              style="width: 96%; display: inline-block;">
-                                                            <Button  @click="arriveStationSelectEvent(station)" size="small" type="text"
+                                                            <Button  @click="stationSelectEvent(station)" size="small" type="text"
                                                                      v-for="station in stations.stations.slice((arriveStationPageIndex-1)*12, 12*arriveStationPageIndex)">
                                                                 {{station.CNName}}
                                                             </Button>
@@ -141,7 +134,7 @@
                                             <div v-if="orderAutoSubmitForm.arriveStationSearch.arriveStationInput" class="search-station-div" style="">
                                                 <div v-if="arriveStationSearchData.length > 0">
                                                     <Button v-for="item in arriveStationSearchData.slice((orderAutoSubmitForm.arriveStationSearch.pageIndex-1)*36, orderAutoSubmitForm.arriveStationSearch.pageIndex*36)"
-                                                            type="text" size="small"  @click="arriveStationSelectEvent(item)">
+                                                            type="text" size="small"  @click="stationSelectEvent(item)">
                                                         {{item.CNName}}
                                                     </Button>
                                                     <Page :total="arriveStationSearchData.length" :page-size="36" size="small" onchange=""></Page>
@@ -157,7 +150,7 @@
                             </Col>
                         </Row>
 
-                        <!-- 出发日期 -->
+                         <!--出发日期-->
                         <Row>
                             <Col span="24">
                                 <span class="collapse-content-title">出发日期: </span>
@@ -166,17 +159,17 @@
                                         {{orderAutoSubmitForm.leftDate.date}}
                                     </span>
                                     <Poptip placement="right" width="275" word-wrap @on-popper-show="orderAutoSubmitForm.ruleInline.leftDateError=false"
-                                            v-model="leftDateSelectPoptip">
+                                            v-model="poptipModels.leftDate">
                                         <Button type="dashed" size="small">
                                             {{orderAutoSubmitForm.leftDate.date == '' ? '请选择': '重新选择'}}
                                         </Button>
                                         <div class="api select-content-div" slot="content" >
-                                            <span style="diplay: inline-block; width: 90px; margin: 0px 15px 0px 15px">
+                                            <span class="collapse-content-title" style="width: 60px;">
                                                 出发日期
                                             </span>
-                                            <DatePicker style="width: 60%; height: 300px;" class="left-date-picker"  type="date"
+                                            <DatePicker class="left-date-picker"  type="date" style="width: 150px;"
                                                         placement="bottom-start" @on-change="leftDateChangeEvent" :editable="false"
-                                                        :transfer="false" :options="departureDateOption" placeholder="请选择出发日期" open>
+                                                        :transfer="false" :options="departureDateOption" placeholder="点击选择出发日期">
                                             </DatePicker>
                                         </div>
                                     </Poptip>
@@ -194,7 +187,8 @@
                                         请选择
                                     </Button>
                                     <span class="collapse-content-span" v-if="orderAutoSubmitForm.trainCode.train.station_train_code">{{orderAutoSubmitForm.trainCode.train.station_train_code}}</span>
-                                    <Poptip v-if="trainCodeSelectEnable" placement="right" width="500" word-wrap v-model="trainCodeSelectPoptip" @on-popper-show="trainCodeSelectShow">
+                                    <Poptip v-if="trainCodeSelectEnable" placement="right" width="500" word-wrap
+                                            v-model="poptipModels.trainCode" @on-popper-show="trainCodeSelectShow">
                                         <Button type="dashed" size="small">
                                             {{orderAutoSubmitForm.trainCode.train.station_train_code? "重新选择" : "请选择"}}
                                         </Button>
@@ -212,6 +206,7 @@
                                                     <Page :total="orderAutoSubmitForm.trainCode.trainCodeData.length" :page-size="12" size="small" onchange="trainCodeDataPageChange"></Page>
                                                 </div>
                                                 <Spin fix v-if="orderAutoSubmitForm.trainCode.trainCodeDataLoading">加载中...</Spin>
+                                                <span fix v-if="orderAutoSubmitForm.trainCode.trainCodeDataLoadError">异常错误，请重试!</span>
                                             </div>
                                         </div>
                                     </Poptip>
@@ -219,46 +214,34 @@
                             </Col>
                         </Row>
 
+                        <!-- 席别 -->
                         <Row>
                             <Col span="8">
                                 <span class="collapse-content-title">席别: </span>
-                                <Poptip placement="right" width="300" word-wrap>
-                                    <Button type="dashed" size="small">
-                                        请选择
-                                    </Button>
-                                    <div slot="content" class="api">
-                                        <Button type="text" size="small">
-                                            一等座
+                                <div class="collapse-content-item">
+                                    <span class="collapse-content-span" v-if="orderAutoSubmitForm.seatType.seatOption.name != ''">
+                                        {{orderAutoSubmitForm.seatType.seatOption.name}}
+                                    </span>
+                                    <Poptip placement="right" width="300" word-wrap v-model="poptipModels.seatType">
+                                        <Button type="dashed" size="small">
+                                            {{orderAutoSubmitForm.seatType.seatOption.name == ''? "请选择": "重新选择"}}
                                         </Button>
-                                        <Button type="text" size="small">
-                                            二等座
-                                        </Button>
-                                        <Button type="text" size="small">
-                                            无座
-                                        </Button>
-                                    </div>
-                                </Poptip>
-
-
+                                        <div slot="content" class="api select-content-div">
+                                            <Button v-for="item in orderAutoSubmitForm.seatType.seatData" type="text" size="small" @click="seatTypeSelectEvent(item)">
+                                                {{item.name}}
+                                            </Button>
+                                        </div>
+                                    </Poptip>
+                                </div>
                             </Col>
                         </Row>
 
-
-
+                        <!--提交-->
                         <Row>
                             <Col span="8">
-                                <span class="collapse-content-span">
-                                </span>
-                                <Poptip placement="right" width="350" word-wrap @on-popper-show="orderAutoSubmitForm.ruleInline.leftDateError=false"
-                                        >
-                                    <Button type="dashed" size="small">
-
-                                    </Button>
-                                    <div class="api select-content-div" slot="content" >
-
-
-                                    </div>
-                                </Poptip>
+                                <Button icon="ios-train" type="success">
+                                    提交订票
+                                </Button>
                             </Col>
                         </Row>
                     </div>
@@ -267,7 +250,7 @@
         </Row>
 
         <!-- 车票查询条件 -->
-        <Row class="content-row-header">
+        <Row class="content-row-header" style="margin-top: 30px;">
             <Col span="6">
                 <span class="col-title">出发地</span>
                 <AutoComplete
@@ -301,46 +284,43 @@
                    :border="false" width="1393"></Table>
             <Page :total="ticketDataCount"  prev-text="上一页" next-text="下一页" @on-change="ticketTablePageChange" />
         </Row>
-
         <!-- 登录对话框 -->
-        <Modal v-model="loginModal"
-                title="登录你的12306账户"
-                :closable="false"
-                >
-            <div style="padding: 0 50px;">
+        <Modal v-model="loginModal" title="登录你的12306账户" :closable="false" width="340">
+            <div style="padding: 0 10px;">
                 <Form ref="formInline" :model="formInline" :rules="ruleInline">
                     <FormItem prop="userName" label="账号">
-                        <Input type="text" v-model="formInline.userName" placeholder="请输入你的账号" style="width: 63%;"/>
+                        <Input type="text" v-model="formInline.userName" placeholder="请输入你的账号" style="width: 70%;"/>
                         <Icon type="ios-person-outline" slot="prepend"></Icon>
                     </FormItem>
                     <FormItem prop="password" label="密码">
-                        <Input type="password" v-model="formInline.password" placeholder="请输入你的账号"
-                               style="width: 63%;"/>
+                        <Input type="password" v-model="formInline.password" placeholder="请输入你的密码"
+                               style="width: 70%;"/>
                         <Icon type="ios-lock-outline" slot="prepend"></Icon>
                     </FormItem>
                     <FormItem prop="picValidate">
-                        <div style="width: 300px; position: relative; height: 200px;">
-                            <Badge v-for="(item, index) in picPointData" :count="index+1"
+                        <div style="width: 300px; position: relative;">
+                            <Badge v-for="(item, index) in validatePicPointData" :count="index+1"
                                    @click.native="pointDataRemove(item)"
                                    :style="{position: 'absolute!important', display: 'inline-block', left: item.x + 'px', top: item.y + 'px', zIndex: '3'}"></Badge>
-                            <!--<Badge :count="5" type="primary" :style="{position: 'absolute!important',left: '10px;', top: '10px'}"></Badge>-->
+                            <span v-if="validateImgLoadError" class="validate-img-load-error" style="">
+                                图片加载异常,请重试
+                            </span>
                             <img :src="validatePicUrl" @click="picClickEvent">
+                            <Icon type="md-refresh" class="pic-validate-img-refresh" @click="getValidateImg"/>
                             <Spin fix v-if="validateImgLoading">
                                 <Icon type="ios-loading" size=18 class="validate-image-load"></Icon>
-                                <div>加载中...</div>
+                                <div>图片加载中...</div>
                             </Spin>
-
                         </div>
                     </FormItem>
                 </Form>
             </div>
             <div slot="footer">
-                <Button type="text" size="large" @click="modalCancel">取消</Button>
+                <Button type="text" size="large" @click="loginModalCancel">取消</Button>
                 <Button type="primary" size="large" @click="loginEvent">登录</Button>
             </div>
             <Spin size="large" fix v-if="loginLoading"></Spin>
         </Modal>
-
     </div>
 </template>
 
@@ -354,20 +334,24 @@
         data () {
             let _this = this;
             const validatePic = (rule, value, callback) => {
-                if (_this.picPointData.length <= 0) {
+                if (_this.validatePicPointData.length <= 0) {
                     callback(new Error('请完成图片验证'));
                 } else {
                     callback();
                 }
             };
             return {
-                leftStationSelectPoptip: false,
-                arriveStationSelectPoptip: false,
-                leftDateSelectPoptip: false,
-                trainCodeSelectPoptip: false,
+                poptipModels:{
+                    leftStation: false,
+                    arriveStation: false,
+                    leftDate: false,
+                    trainCode: false,
+                    seatType: false,
+                },
                 validateImgLoading: false,
+                validateImgLoadError: false,
                 loginLoading: false,
-                ticketInfoSelect: '1',
+                ticketInfoSelect: ['0'],
                 loginModal: false,
                 departurePlace: {
                     CNAbbr: '',
@@ -653,9 +637,27 @@
                         train: {},
                         trainCodeData: [],
                         trainCodeDataLoading: false,
+                        trainCodeDataLoadError: false,
                         pageIndex: 1,
                     },
-                    seatType:{},
+                    seatType:{
+                        seatData: [{
+                            type: 'M',
+                            name: '一等座'
+                        },
+                        {
+                            type: 'O',
+                            name: '二等座',
+                        },
+                        {
+                            type: 'O',
+                            name: '无座'
+                        }],
+                        seatOption: {
+                            name: '',
+                            type: ''
+                        }
+                    },
                     ruleInline: {
                         leftStationError: false,
                         arriveStationError: false,
@@ -677,9 +679,9 @@
                         { validator: validatePic, trigger: 'blur' }
                     ]
                 },
-                picPointData:[],
+                validatePicPointData:[],
                 ticketData: [],
-                userToken: '',
+                picToken: '',
                 letterSortStation: [],
             }
         },
@@ -727,6 +729,7 @@
             }
         },
         created(){
+
             let _this = this;
 
             let sortStationTitle = ["ABCDE", "FGHIJ", "KLMNO", "PQRST", "UVWXYZ"];
@@ -769,6 +772,21 @@
             });
         },
         methods: {
+            getValidateImg(){
+                let _this = this;
+                _this.validateImgLoading = true;
+                _this.validateImgLoadError = false;
+                _this.validatePicPointData = [];
+                ajax.post('api/Station/getValidateImage', {
+                }).then(function(response){
+                    _this.validateImgLoading = false;
+                    _this.validatePicUrl = response.data.data.imgUrl;
+                    _this.picToken = response.data.data.token;
+                }).catch(function(error){
+                    _this.validateImgLoading = false;
+                    _this.validateImgLoadError = true;
+                });
+            },
             departurePlaceSearch (value) {
                 let matchArr = [];
                 stations.Stations.map(function(item){
@@ -844,39 +862,33 @@
                 });
             },
             loginModalClick(){
-                let _this = this;
-                this.validateImgLoading = true;
                 this.loginModal = true;
-                ajax.post('api/Station/getValidateImage', {
-                }).then(function(response){
-                    _this.validateImgLoading = false;
-                    _this.validatePicUrl = response.data.data.imgUrl;
-                    _this.userToken = response.data.data.token;
-                });
+                this.getValidateImg();
             },
-            modalCancel(){
+            loginModalCancel(){
                 this.loginModal = false;
             },
             loginEvent(name){
                 let pointsData = [];
                 let _this = this;
-                this.picPointData.map(function(item){
+                this.validatePicPointData.map(function(item){
                     pointsData.push(item.x);
                     pointsData.push(item.y);
                 });
                 this.$refs["formInline"].validate((valid) => {
                     if (valid) {
-                        if(_this.picPointData.length <= 0){
+                        if(_this.validatePicPointData.length <= 0){
                             this.$Message.error("请完成图片验证");
-                        }else{
+                        }
+                        else{
                             this.loginLoading = true;
                             ajax.post('api/Station/validateLogin', {
                                 UserName: _this.formInline.userName,
                                 Password: _this.formInline.password,
                                 pointsData: pointsData,
-                                token: _this.userToken
+                                token: _this.picToken
                             }).then(function(response){
-                                _this.picPointData = [];
+                                _this.validatePicPointData = [];
                                 _this.loginLoading = false;
                                 if(response.data.code != 200){
                                     _this.$Message.error({
@@ -884,27 +896,16 @@
                                         duration: 3
                                     });
                                     _this.validateImgLoading = true;
-                                    ajax.post('api/Station/getValidateImage', {
-                                    }).then(function(response){
-                                        _this.validateImgLoading = true;
-                                        _this.validatePicUrl = response.data.data.imgUrl;
-                                        _this.userToken = response.data.data.token;
-                                    }).catch(function(error){
-                                        _this.validateImgLoading = true;
-                                        _this.$Message.error({
-                                            content: '获取验证码异常',
-                                            duration: 1.5
-                                        });
-                                    });
+                                    _this.getValidateImg();
                                 }
                                 else{
                                     _this.$store.commit('home/setPassenger', response.data.data);
                                     _this.loginModal = false;
+                                    console.log(response.data.data);
                                     _this.$Message.success({
                                         content: "登录成功",
                                         duration: 1.5
                                     });
-
                                 }
                             }).catch(function(error){
                                 _this.loginLoading = false;
@@ -916,20 +917,18 @@
                         }
                     }
                 });
-
-
             },
             picClickEvent(event){
-                this.picPointData.push({
+                this.validatePicPointData.push({
                     x: event.offsetX,
                     y: event.offsetY
                 });
             },
             pointDataRemove(obj){
-                _.remove(this.picPointData, obj);
+                _.remove(this.validatePicPointData, obj);
 
                 //解决lodash.remove函数非响应式问题
-                this.picPointData.sort();
+                this.validatePicPointData.sort();
             },
             userDtoBtn(){
                 ajax.post('api/Station/GetPassengerDto', {
@@ -937,13 +936,17 @@
                     console.log(response);
                 });
             },
-            leftStationSelectEvent(item){
-                this.leftStationSelectPoptip = false;
-                this.orderAutoSubmitForm.leftStation = item;
-            },
-            arriveStationSelectEvent(item){
-                this.arriveStationSelectPoptip = false;
-                this.orderAutoSubmitForm.arriveStation = item;
+            stationSelectEvent(item, type){
+                if(type == 1){
+                    //  出发车站
+                    this.poptipModels.leftStation = false;
+                    this.orderAutoSubmitForm.leftStation = item;
+                }else if(type == 1){
+                    //  到达车站
+                    this.poptipModels.arriveStation = false;
+                    this.orderAutoSubmitForm.arriveStation = item;
+                }
+
             },
             stationTabClick(name){
                 this.leftStationPageIndex = 1;
@@ -976,7 +979,7 @@
                             duration: 1.5
                         });
                     }else{
-                        _this.leftStationSelectPoptip = false;
+                        _this.poptipModels.leftStation = false;
                     }
                 }
             },
@@ -998,7 +1001,7 @@
                             duration: 1.5
                         });
                     }else{
-                        _this.arriveStationSelectPoptip = false;
+                        _this.poptipModels.arriveStation = false;
                     }
                 }
             },
@@ -1011,7 +1014,7 @@
             },
 
             leftDateChangeEvent(date){
-                this.leftDateSelectPoptip = false;
+                this.poptipModels.leftDate = false;
                 this.orderAutoSubmitForm.leftDate.date = date;
             },
             trainCodeSelectError(){
@@ -1027,7 +1030,6 @@
                 }
             },
             trainCodeSelectShow(){
-                console.log("trainCodeSelectShow");
                 let _this = this;
                 this.orderAutoSubmitForm.trainCode.trainCodeDataLoading = true;
                 ajax.post('api/Station/ticketQuery', {
@@ -1037,16 +1039,22 @@
                 }).then(function(response){
                     _this.orderAutoSubmitForm.trainCode.trainCodeDataLoading = false;
                     _this.orderAutoSubmitForm.trainCode.trainCodeData = response.data.data;
+                }).catch(function(error){
+                    _this.orderAutoSubmitForm.trainCode.trainCodeDataLoading = false;
+                    _this.orderAutoSubmitForm.trainCode.trainCodeDataLoadError = false;
                 });
             },
             trainCodeDataPageChange(page){
                 this.orderAutoSubmitForm.trainCode.pageIndex = page;
             },
             trainCodeSelectEvent(item){
-                this.trainCodeSelectPoptip = false;
+                this.poptipModels.trainCode = false;
                 this.orderAutoSubmitForm.trainCode.train = item;
+            },
+            seatTypeSelectEvent(item){
+                this.orderAutoSubmitForm.seatType.seatOption = item;
+                this.poptipModels.seatType = false;
             }
-
         }
     }
 </script>
@@ -1084,8 +1092,9 @@
 
     .collapse-header-span{
         display: inline-block;
-        height: 30px;
-        line-height: 30px;
+        width: 95px;
+        height: 28px;
+        line-height: 28px;
         padding: 0 10px;
         background: #f90;
         color: #fff;
@@ -1094,7 +1103,8 @@
     }
 
     .collapse-content-div{
-        width: 1300px;
+        width: 1000px;
+        border-bottom: 1.5px solid #dcdee2;
     }
 
     .collapse-content-div .collapse-content-title{
@@ -1114,14 +1124,11 @@
 
     .collapse-content-div .collapse-content-item{
         display: inline-block;
-
     }
 
     .collapse-content-div .collapse-content-span{
-        /*padding: 1px 7px 2px;*/
         font-size: 12px;
         border-radius: 3px;
-        /*margin-right: 10px;*/
         display: inline-block;
         width: 70px;
         text-align: center;
@@ -1150,6 +1157,7 @@
         margin-right: 20px;
     }
 
+    /* 验证图片加载动画 */
     .validate-image-load{
         animation: ani-spin 1s linear infinite;
     }
@@ -1158,6 +1166,22 @@
         from { transform: rotate(0deg);}
         50%  { transform: rotate(180deg);}
         to   { transform: rotate(360deg);}
+    }
+    /* 验证图片加载动画结束 */
+    .pic-validate-img-refresh{
+        position: absolute;
+        right: 8px;
+        top: 5px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .validate-img-load-error{
+        font-size: 14px;
+        position: absolute;
+        color: #ed4014;
+        width: 100%;
+        border-bottom: 1px solid #dcdee2;
     }
 
 </style>

@@ -29,16 +29,19 @@ const home = {
         }],
         routes: [
             homeRouter,
-            appRouter,
-            manageMenuRouter
+            ...appRouter,
+            ...manageMenuRouter
         ],
         passenger:{
             name: ''
         }
     },
     mutations: {
-        initCachePage(state){
-
+        logout(){
+            localStorage.clear();
+        },
+        initPageOpenedList(state){
+            state.pageOpenedList = localStorage.cachePage ? JSON.parse(localStorage.cachePage) : state.pageOpenedList;
         },
         setCurrentPageName(state, name){
             state.currentPage = name;
@@ -75,6 +78,7 @@ const home = {
             });
         },
         pageOpenedList(state, name){
+            console.log(state.routes);
             let isExist = false;
             state.pageOpenedList.map((item) => {
                 if (item.name === name) {
@@ -90,12 +94,12 @@ const home = {
                     });
                 });
             }
+            localStorage.cachePage = JSON.stringify(state.pageOpenedList);
         },
         closePage(state, name){
             state.pageOpenedList.map(function(route, index){
                 if(route.name === name){
                     state.pageOpenedList.splice(index, 1);
-
                     return;
                 }
             });

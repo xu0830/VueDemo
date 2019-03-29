@@ -5,8 +5,8 @@
             <Tag v-for="(item, index) in pageOpenedList" type="dot"
                  :name="item.name" :key="item.name"
                  :closable="item.name === 'index'?false:true"
-                 @on-close="closePage" @click.native="tagClick(item.name)" :color="item.name === currentPage? 'blue' : 'default'"
-            :class="item.name === currentPage ? 'tag-current' : ''">
+                 @on-close="closePage" @click.native="tagClick(item.name)" :color="item.name === currentPageName ? 'blue' : 'default'"
+            :class="item.name === currentPageName ? 'tag-current' : ''">
                 {{item.meta.title}}
             </Tag>
         </transition-group>
@@ -18,11 +18,14 @@
         name: "tag-pages-opened",
         data(){
             return {
+
             }
         },
-        created(){
-        },
         computed: {
+            currentPageName(){
+                console.log(this.$route.name);
+               return this.$route.name ;
+            },
             pageOpenedList(){
                 return this.$store.state.home.pageOpenedList
             },
@@ -54,7 +57,6 @@
             },
 
             tagClick(name){
-                console.log(name);
                 this.$store.commit("home/setCurrentPageName", name);
                 this.$router.push({
                     name: name

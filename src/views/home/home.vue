@@ -6,13 +6,14 @@
                     <h2><router-link to="/home/index">我的网站</router-link></h2>
                 </div>
                 <Menu theme="dark" width="auto" :accordion="true" @on-select="menuSelect">
+
                     <Submenu name="1">
                         <template slot="title">
                             <Icon type="ios-navigate"></Icon>
                             应用
                         </template>
                         <MenuItem name="station">高铁订票</MenuItem>
-                        <MenuItem name="others">其他</MenuItem>
+                        <MenuItem name="other">其他</MenuItem>
                     </Submenu>
                     <Submenu name="2">
                         <template slot="title">
@@ -37,7 +38,9 @@
                 <tag-pages-opened class="tag-pages-opened"></tag-pages-opened>
                 <Content class="page-content">
                     <div class="page-content-container">
-                        <router-view></router-view>
+                        <keep-alive>
+                            <router-view></router-view>
+                        </keep-alive>
                     </div>
                 </Content>
                 <Footer class="layout-footer-center">2019-2020 &copy; xxxxx</Footer>
@@ -58,7 +61,7 @@
             }
         },
         created(){
-            // this.$store.commit('home/initCachePage');
+            this.$store.commit('home/initPageOpenedList');
         },
         computed: {
             currentPath(){
@@ -76,15 +79,17 @@
         },
         methods: {
             menuSelect(name){
+                let _this = this;
                 this.$router.push({
                     name:name
                 });
-                this.$store.commit("home/setCurrentPageName", name);
-                this.$store.commit("home/pageOpenedList", name);
-                console.log("menuSelect");
-                console.log(this.$store.state.home.currentPage);
-                console.log(this.$store.state.home.pageOpenedList);
-            },
+                setTimeout(function(){
+                    _this.$store.commit("home/setCurrentPageName", name);
+                })
+                setTimeout(function(){
+                    _this.$store.commit("home/pageOpenedList", name);
+                });
+            }
         }
     }
 </script>
