@@ -1,5 +1,5 @@
 export const loginRouter = {
-    path: '/login',
+    path: '/',
     name: 'login',
     meta: {
         title: '登录'
@@ -8,7 +8,7 @@ export const loginRouter = {
 };
 
 export const homeRouter = {
-    path: '/',
+    path: '/home',
     name: 'home',
     meta: { title: '首页' },
     component: () => import('../views/home/home.vue'),

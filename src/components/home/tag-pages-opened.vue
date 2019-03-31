@@ -23,21 +23,16 @@
         },
         computed: {
             currentPageName(){
-                console.log(this.$route.name);
-               return this.$route.name ;
+                return this.$route.name;
             },
             pageOpenedList(){
-                return this.$store.state.home.pageOpenedList
+                return this.$store.state.home.pageOpenedList;
             },
             currentPage(){
                 return this.$store.state.home.currentPage
             }
         },
         methods: {
-            itemTitle(name){
-                // return this.localize(name);
-            },
-
             closePage(event, name){
                 let _this = this;
                 let pageNum = _this.$store.state.home.pageOpenedList.length;
@@ -67,15 +62,6 @@
 </script>
 
 <style scoped>
-    /*.tag-opended-container{*/
-        /*position: relative;*/
-        /*width: 100%;*/
-        /*background: #f0f2f5;*/
-        /*box-sizing:border-box;*/
-        /*padding: 0px 20px;*/
-        /*border-bottom: 1px solid #e3e3e3;*/
-    /*}*/
-
     .ivu-tag-dot{
         border-width: 2px!important;
 

@@ -43,7 +43,7 @@
                         </keep-alive>
                     </div>
                 </Content>
-                <Footer class="layout-footer-center">2019-2020 &copy; xxxxx</Footer>
+                <Footer class="layout-footer-center">2019-2020 &copy; xucanjie</Footer>
             </Layout>
         </Layout>
     </div>
@@ -61,34 +61,32 @@
             }
         },
         created(){
-            this.$store.commit('home/initPageOpenedList');
+            this.$store.commit('home/initPage');
         },
         computed: {
             currentPath(){
                 return this.$store.state.home.currentPath;
             }
         },
-        watch:{
-            // $route(to,from){
-            //     if(to.path.indexOf("home") == -1){
-            //         this.currentPath = "home" + to.path;
-            //     }else{
-            //         this.currentPath = "home";
-            //     }
-            // }
-        },
+        // watch:{
+        //     $route(to, from){
+        //         console.log(to);
+        //         console.log(from);
+        //         this.$router.push({
+        //             name: to.name
+        //         });
+        //         this.$store.commit("home/setCurrentPageName", to.name);
+        //         this.$store.commit("home/pageOpenedList", to.name);
+        //     }
+        // },
+
         methods: {
             menuSelect(name){
-                let _this = this;
                 this.$router.push({
                     name:name
                 });
-                setTimeout(function(){
-                    _this.$store.commit("home/setCurrentPageName", name);
-                })
-                setTimeout(function(){
-                    _this.$store.commit("home/pageOpenedList", name);
-                });
+                this.$store.commit("home/setCurrentPageName", name);
+                this.$store.commit("home/pageOpenedList", name);
             }
         }
     }

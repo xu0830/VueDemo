@@ -40,11 +40,13 @@ const home = {
         logout(){
             localStorage.clear();
         },
-        initPageOpenedList(state){
-            state.pageOpenedList = localStorage.cachePage ? JSON.parse(localStorage.cachePage) : state.pageOpenedList;
+        initPage(state){
+            state.pageOpenedList = JSON.parse(localStorage.pageOpenedList);
+            state.currentPage = localStorage.currentPage;
         },
         setCurrentPageName(state, name){
             state.currentPage = name;
+            localStorage.currentPage = name;
             state.currentPath.length = 1;
             state.routes.map(function(item){
                 item.children.map(function(route){
@@ -78,7 +80,6 @@ const home = {
             });
         },
         pageOpenedList(state, name){
-            console.log(state.routes);
             let isExist = false;
             state.pageOpenedList.map((item) => {
                 if (item.name === name) {
@@ -94,7 +95,7 @@ const home = {
                     });
                 });
             }
-            localStorage.cachePage = JSON.stringify(state.pageOpenedList);
+            localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList);
         },
         closePage(state, name){
             state.pageOpenedList.map(function(route, index){
@@ -103,7 +104,7 @@ const home = {
                     return;
                 }
             });
-
+            localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList);
             // state.currentPage = state.pageOpenedList;
 
         },

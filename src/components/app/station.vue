@@ -14,7 +14,9 @@
                             <Col span="8">
                                 <span class="collapse-content-title">乘车人: </span>
                                 <div class="collapse-content-item">
-                                    <span v-if="currentPassenger.name != ''" class="collapse-content-span">{{currentPassenger.name}}</span>
+                                    <span v-if="currentPassenger.name != ''" class="collapse-content-span">
+                                        {{currentPassenger.name}}
+                                    </span>
                                     <Button type="dashed" size="small" @click="loginModalClick">
                                         {{ currentPassenger.name != ''? "重新选择" : "请选择" }}
                                     </Button>
@@ -24,58 +26,65 @@
 
                         <!-- 出发车站 & 到达车站 -->
                         <Row>
-                            <Col span="5">
+                            <Col span="6">
                                 <span class="collapse-content-title">出发车站: </span>
                                 <div class="collapse-content-item">
-                                    <span class="collapse-content-span"  v-if="orderAutoSubmitForm.leftStation.CNName != ''">{{orderAutoSubmitForm.leftStation.CNName}}</span>
-                                    <Poptip placement="right" width="490" v-model="poptipModels.leftStation" @on-popper-show="orderAutoSubmitForm.ruleInline.leftStationError=false">
+                                    <span class="collapse-content-span"  v-if="orderAutoSubmitForm.leftStation.CNName != ''">
+                                        {{orderAutoSubmitForm.leftStation.CNName}}
+                                    </span>
+                                    <Poptip placement="right" width="490" v-model="poptipModels.leftStation"
+                                            @on-popper-show="orderAutoSubmitForm.ruleInline.leftStationRequireError=false">
                                         <Button type="dashed" size="small">
                                             {{ orderAutoSubmitForm.leftStation.CNName != ''? "重新选择" : "请选择" }}
                                         </Button>
                                         <div class="api select-content-div " slot="content"
                                              :class="{'ivu-form-item-error': orderAutoSubmitForm.leftStationSearch.leftStationInputError}">
-                                            <Input placeholder="请输入出发地" style="width:40%;" v-model="orderAutoSubmitForm.leftStationSearch.leftStationInput"
-                                                   @on-focus="leftStationInputFocus"/>
-                                            <Button type="info" style="margin-left: 15px;" @click="leftStationSearchBtn">确定</Button>
-                                            <span v-if="orderAutoSubmitForm.leftStationSearch.leftStationInputError" style="color: red;">
+                                            <Input placeholder="请输入出发地" style="width:40%;" @on-focus="leftStationInputFocus"
+                                                   v-model="orderAutoSubmitForm.leftStationSearch.leftStationInput"/>
+                                            <Button type="info" style="margin-left: 15px;" @click="leftStationSearchBtn">
+                                                确定
+                                            </Button>
+                                            <span v-if="orderAutoSubmitForm.leftStationSearch.leftStationInputError"
+                                                  style="color: red;">
                                                 出发车站不能为空！
                                             </span>
-                                            <Tabs v-if="!orderAutoSubmitForm.leftStationSearch.leftStationInput" :animated="false" size="small"
-                                                  @on-click="stationTabClick">
+                                            <Tabs v-if="!orderAutoSubmitForm.leftStationSearch.leftStationInput"
+                                                  :animated="false" size="small" @on-click="stationTabClick">
                                                 <TabPane label="热门">
                                                     <div>
                                                         <Button type="text" size="small" v-for="item in favorite_station"
-                                                                @click="stationSelectEvent(item)" :key="item.Index">
+                                                                @click="stationSelectEvent(item, 1)" :key="item.Index">
                                                             {{item.CNName}}
                                                         </Button>
                                                     </div>
                                                 </TabPane>
                                                 <TabPane v-for="item in letterSortStation" :label="item.title">
                                                     <div v-for="stations in item.stationClass">
-                                                        <span v-if="stations.stations.slice((leftStationPageIndex-1)*12, 12*leftStationPageIndex).length>0"
+                                                        <span v-if="stations.stations.slice((orderAutoSubmitForm.leftStationPageIndex-1)*12, 12*orderAutoSubmitForm.leftStationPageIndex).length>0"
                                                               style="color: #e96900; display: inline-block; margin-top: 7px; vertical-align: top;">
-                                                            {{stations.stations.slice((leftStationPageIndex-1)*12, 12*leftStationPageIndex).length>0 ? stations.title : ''}}
+                                                            {{stations.stations.slice((orderAutoSubmitForm.leftStationPageIndex-1)*12, 12*orderAutoSubmitForm.leftStationPageIndex).length>0 ? stations.title : ''}}
                                                         </span>
-                                                        <div v-if="stations.stations.slice((leftStationPageIndex-1)*12, 12*leftStationPageIndex).length>0"
+                                                        <div v-if="stations.stations.slice((orderAutoSubmitForm.leftStationPageIndex-1)*12, 12*orderAutoSubmitForm.leftStationPageIndex).length>0"
                                                              style="width: 96%; display: inline-block;">
-                                                            <Button  @click="stationSelectEvent(station)" size="small" type="text"
-                                                                     v-for="station in stations.stations.slice((leftStationPageIndex-1)*12, 12*leftStationPageIndex)">
+                                                            <Button  @click="stationSelectEvent(station, 1)" size="small" type="text"
+                                                                     v-for="station in stations.stations.slice((orderAutoSubmitForm.leftStationPageIndex-1)*12, 12*orderAutoSubmitForm.leftStationPageIndex)">
                                                                 {{station.CNName}}
                                                             </Button>
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <Page size="small" :current="leftStationPageIndex" :total="item.count" :page-size="12" @on-change="leftStationPageChange"></Page>
+                                                        <Page size="small" :current="orderAutoSubmitForm.leftStationPageIndex" :total="item.count" :page-size="12" @on-change="leftStationPageChange"></Page>
                                                     </div>
                                                 </TabPane>
                                             </Tabs>
                                             <div v-if="orderAutoSubmitForm.leftStationSearch.leftStationInput" class="search-station-div" style="">
                                                 <div v-if="leftStationSearchData.length > 0">
                                                     <Button v-for="item in leftStationSearchData.slice((orderAutoSubmitForm.leftStationSearch.pageIndex-1)*36, orderAutoSubmitForm.leftStationSearch.pageIndex*36)"
-                                                            @click="stationSelectEvent(item)" type="text" size="small">
+                                                            @click="stationSelectEvent(item, 1)" type="text" size="small">
                                                         {{item.CNName}}
                                                     </Button>
-                                                    <Page :total="leftStationSearchData.length" :page-size="36" size="small" onchange=""></Page>
+                                                    <Page :total="leftStationSearchData.length" :page-size="36" size="small"
+                                                          @on-change="leftStationSearchPageChange"></Page>
                                                 </div>
                                                 <div v-if="!leftStationSearchData.length > 0">
                                                     未找到相似的车站
@@ -84,20 +93,21 @@
                                         </div>
                                     </Poptip>
                                 </div>
-                                <span v-if="orderAutoSubmitForm.ruleInline.leftStationError" class="collapsse-content-error">请选择出发车站</span>
+                                <span v-if="orderAutoSubmitForm.ruleInline.leftStationRequireError" class="collapsse-content-error">请选择出发车站</span>
                             </Col>
-                            <Col span="5">
+                            <Col span="6">
                                 <span class="collapse-content-title">到达车站: </span>
                                 <div class="collapse-content-item">
                                     <span class="collapse-content-span" v-if="orderAutoSubmitForm.arriveStation.CNName != ''">{{orderAutoSubmitForm.arriveStation.CNName}}</span>
-                                    <Poptip placement="right" width="480" v-model="poptipModels.arriveStation" @on-popper-show="orderAutoSubmitForm.ruleInline.arriveStationError=false">
+                                    <Poptip placement="right" width="480" v-model="poptipModels.arriveStation"
+                                            @on-popper-show="orderAutoSubmitForm.ruleInline.arriveStationRequireError=false">
                                         <Button type="dashed" size="small">
                                             {{ orderAutoSubmitForm.arriveStation.CNName != ''? "重新选择" : "请选择" }}
                                         </Button>
                                         <div class="api select-content-div"  slot="content"
                                              :class="{'ivu-form-item-error': orderAutoSubmitForm.arriveStationSearch.leftStationInputError}">
-                                            <Input placeholder="请输入出发地" style="width:40%;" v-model="orderAutoSubmitForm.arriveStationSearch.arriveStationInput"
-                                                   @on-focus="leftStationInputFocus"/>
+                                            <Input placeholder="请输入到达地" style="width:40%;" v-model="orderAutoSubmitForm.arriveStationSearch.arriveStationInput"
+                                                   @on-focus="arriveStationInputFocus"/>
                                             <Button type="info" style="margin-left: 15px;" @click="arriveStationSearchBtn">确定</Button>
                                             <span v-if="orderAutoSubmitForm.arriveStationSearch.arriveStationInputError" style="color: red;">
                                                 出发车站不能为空！
@@ -107,37 +117,37 @@
                                                 <TabPane label="热门">
                                                     <div>
                                                         <Button type="text" size="small" v-for="item in favorite_station"
-                                                                @click="stationSelectEvent(item)" :key="item.Index">
+                                                                @click="stationSelectEvent(item, 2)" :key="item.Index">
                                                             {{item.CNName}}
                                                         </Button>
                                                     </div>
                                                 </TabPane>
                                                 <TabPane v-for="item in letterSortStation" :label="item.title">
                                                     <div v-for="stations in item.stationClass">
-                                                        <span v-if="stations.stations.slice((arriveStationPageIndex-1)*12, 12*arriveStationPageIndex).length>0"
+                                                        <span v-if="stations.stations.slice((orderAutoSubmitForm.arriveStationPageIndex-1)*12, 12*orderAutoSubmitForm.arriveStationPageIndex).length>0"
                                                               style="color: #e96900; display: inline-block; margin-top: 7px; vertical-align: top;">
-                                                            {{stations.stations.slice((arriveStationPageIndex-1)*12, 12*arriveStationPageIndex).length>0 ? stations.title : ''}}
+                                                            {{stations.stations.slice((orderAutoSubmitForm.arriveStationPageIndex-1)*12, 12*orderAutoSubmitForm.arriveStationPageIndex).length>0 ? stations.title : ''}}
                                                         </span>
-                                                        <div v-if="stations.stations.slice((arriveStationPageIndex-1)*12, 12*arriveStationPageIndex).length>0"
+                                                        <div v-if="stations.stations.slice((orderAutoSubmitForm.arriveStationPageIndex-1)*12, 12*orderAutoSubmitForm.arriveStationPageIndex).length>0"
                                                              style="width: 96%; display: inline-block;">
-                                                            <Button  @click="stationSelectEvent(station)" size="small" type="text"
-                                                                     v-for="station in stations.stations.slice((arriveStationPageIndex-1)*12, 12*arriveStationPageIndex)">
+                                                            <Button  @click="stationSelectEvent(station, 2)" size="small" type="text"
+                                                                     v-for="station in stations.stations.slice((orderAutoSubmitForm.arriveStationPageIndex-1)*12, 12*orderAutoSubmitForm.arriveStationPageIndex)">
                                                                 {{station.CNName}}
                                                             </Button>
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <Page size="small" :current="arriveStationPageIndex" :total="item.count" :page-size="12" @on-change="arriveStationPageChange"></Page>
+                                                        <Page size="small" :current="orderAutoSubmitForm.arriveStationPageIndex" :total="item.count" :page-size="12" @on-change="arriveStationPageChange"></Page>
                                                     </div>
                                                 </TabPane>
                                             </Tabs>
                                             <div v-if="orderAutoSubmitForm.arriveStationSearch.arriveStationInput" class="search-station-div" style="">
                                                 <div v-if="arriveStationSearchData.length > 0">
                                                     <Button v-for="item in arriveStationSearchData.slice((orderAutoSubmitForm.arriveStationSearch.pageIndex-1)*36, orderAutoSubmitForm.arriveStationSearch.pageIndex*36)"
-                                                            type="text" size="small"  @click="stationSelectEvent(item)">
+                                                            type="text" size="small"  @click="stationSelectEvent(item, 2)">
                                                         {{item.CNName}}
                                                     </Button>
-                                                    <Page :total="arriveStationSearchData.length" :page-size="36" size="small" onchange=""></Page>
+                                                    <Page :total="arriveStationSearchData.length" :page-size="36" size="small" @on-change="arriveStationSearchPageChange"></Page>
                                                 </div>
                                                 <div v-if="!arriveStationSearchData.length > 0">
                                                     未找到相似的车站
@@ -146,7 +156,7 @@
                                         </div>
                                     </Poptip>
                                 </div>
-                                <span v-if="orderAutoSubmitForm.ruleInline.arriveStationError" class="collapsse-content-error">请选择到达车站</span>
+                                <span v-if="orderAutoSubmitForm.ruleInline.arriveStationRequireError" class="collapsse-content-error">请选择到达车站</span>
                             </Col>
                         </Row>
 
@@ -158,8 +168,8 @@
                                     <span class="collapse-content-span" v-if="orderAutoSubmitForm.leftDate.date != ''">
                                         {{orderAutoSubmitForm.leftDate.date}}
                                     </span>
-                                    <Poptip placement="right" width="275" word-wrap @on-popper-show="orderAutoSubmitForm.ruleInline.leftDateError=false"
-                                            v-model="poptipModels.leftDate">
+                                    <Poptip placement="right" width="275" word-wrap v-model="poptipModels.leftDate"
+                                            @on-popper-show="orderAutoSubmitForm.ruleInline.leftDateRequireError=false">
                                         <Button type="dashed" size="small">
                                             {{orderAutoSubmitForm.leftDate.date == '' ? '请选择': '重新选择'}}
                                         </Button>
@@ -173,7 +183,7 @@
                                             </DatePicker>
                                         </div>
                                     </Poptip>
-                                    <span v-if="orderAutoSubmitForm.ruleInline.leftDateError" class="collapsse-content-error">请选择出发日期</span>
+                                    <span v-if="orderAutoSubmitForm.ruleInline.leftDateRequireError" class="collapsse-content-error">请选择出发日期</span>
                                 </div>
                             </Col>
                         </Row>
@@ -239,7 +249,7 @@
                         <!--提交-->
                         <Row>
                             <Col span="8">
-                                <Button icon="ios-train" type="success">
+                                <Button icon="ios-train" type="success" @click="submitOrder">
                                     提交订票
                                 </Button>
                             </Col>
@@ -275,7 +285,7 @@
                 </DatePicker>
             </Col>
             <Col span="3">
-                <Button type="primary" class="row-btn" :loading="ticketLoading" @click="TicketQuery">查询</Button>
+                <Button type="primary" style="margin-left: 20px;" class="row-btn" :loading="ticketLoading" @click="TicketQuery">查询</Button>
             </Col>
         </Row>
         <!-- 车票信息 -->
@@ -607,8 +617,6 @@
                     }
                 ],
                 ticketTablePageIndex: 0,
-                leftStationPageIndex: 1,
-                arriveStationPageIndex: 1,
                 orderAutoSubmitForm: {
                     passenger:{
                         name: ''
@@ -616,6 +624,8 @@
                     leftStation: {
                         CNName: ''
                     },
+                    leftStationPageIndex: 1,
+                    arriveStationPageIndex: 1,
                     arriveStation: {
                         CNName: ''
                     },
@@ -659,9 +669,9 @@
                         }
                     },
                     ruleInline: {
-                        leftStationError: false,
-                        arriveStationError: false,
-                        leftDateError: false,
+                        leftStationRequireError: false,
+                        arriveStationRequireError: false,
+                        leftDateRequireError: false,
                     },
                 },
                 formInline: {
@@ -682,12 +692,55 @@
                 validatePicPointData:[],
                 ticketData: [],
                 picToken: '',
-                letterSortStation: [],
+
             }
         },
         computed: {
             ticketTableData(){
                 return this.ticketData.slice(this.ticketTablePageIndex*10, 10*this.ticketTablePageIndex+10);
+            },
+            letterSortStation(){
+                let sortStation = [];
+                let sortStationTitle = ["ABCDE", "FGHIJ", "KLMNO", "PQRST", "UVWXYZ"];
+
+                for(let i=0; i<sortStationTitle.length; i++){
+                    var obj = {
+                        title: sortStationTitle[i],
+                        stationClass: [],
+                        count: 0
+                    };
+                    for(let j=0; j<sortStationTitle[i].length; j++){
+                        obj.stationClass.push({
+                            title: sortStationTitle[i][j],
+                            stations: []
+                        });
+                    }
+                    sortStation.push(obj);
+                }
+
+                stations.Stations.map(function(item, index){
+                    var firstChar = item.CNAbbr[0].toUpperCase();
+
+                    var sortIndex = -1;
+                    sortStationTitle.map(function(str, num){
+                        if(str.indexOf(firstChar) > -1){
+                            sortIndex = num;
+                            return false;
+                        }
+                    });
+                    sortStation[sortIndex].stationClass.map(function(stationClass){
+                        if(stationClass.title === firstChar){
+                            stationClass.stations.push(item);
+                        }
+                    });
+                });
+                sortStation.map(function(item){
+                    item.stationClass.map(function(stationClass){
+                        item.count = item.count < stationClass.stations.length ? stationClass.stations.length : item.count;
+                    });
+                });
+
+                return sortStation;
             },
             leftStationSearchData(){
                 let stationArr = [];
@@ -697,7 +750,6 @@
                         stationArr.push(item);
                     }
                 });
-                console.log(stationArr);
                 return stationArr;
             },
             arriveStationSearchData(){
@@ -730,47 +782,8 @@
         },
         created(){
 
-            let _this = this;
-
-            let sortStationTitle = ["ABCDE", "FGHIJ", "KLMNO", "PQRST", "UVWXYZ"];
-
-            for(let i=0; i<sortStationTitle.length; i++){
-                var obj = {
-                    title: sortStationTitle[i],
-                    stationClass: [],
-                    count: 0
-                };
-                for(let j=0; j<sortStationTitle[i].length; j++){
-                    obj.stationClass.push({
-                        title: sortStationTitle[i][j],
-                        stations: []
-                    });
-                }
-                this.letterSortStation.push(obj);
-            }
-
-            stations.Stations.map(function(item, index){
-                var firstChar = item.CNAbbr[0].toUpperCase();
-
-                var sortIndex = -1;
-                sortStationTitle.map(function(str, num){
-                    if(str.indexOf(firstChar) > -1){
-                        sortIndex = num;
-                        return false;
-                    }
-                });
-                _this.letterSortStation[sortIndex].stationClass.map(function(stationClass){
-                    if(stationClass.title === firstChar){
-                        stationClass.stations.push(item);
-                    }
-                });
-            });
-            _this.letterSortStation.map(function(item){
-                item.stationClass.map(function(stationClass){
-                    item.count = item.count < stationClass.stations.length ? stationClass.stations.length : item.count;
-                });
-            });
         },
+
         methods: {
             getValidateImg(){
                 let _this = this;
@@ -780,8 +793,12 @@
                 ajax.post('api/Station/getValidateImage', {
                 }).then(function(response){
                     _this.validateImgLoading = false;
-                    _this.validatePicUrl = response.data.data.imgUrl;
-                    _this.picToken = response.data.data.token;
+                    if(response.data.code == 200){
+                        _this.validatePicUrl = response.data.data.imgUrl;
+                        _this.picToken = response.data.data.token;
+                    }else if(response.data.code == 204){
+                        _this.validateImgLoadError = true;
+                    }
                 }).catch(function(error){
                     _this.validateImgLoading = false;
                     _this.validateImgLoadError = true;
@@ -811,12 +828,8 @@
             ticketTablePageChange(page){
                 this.ticketTablePageIndex = page-1;
             },
-            leftStationPageChange(page){
-                this.leftStationPageIndex = page;
-            },
-            arriveStationPageChange(page){
-                this.arriveStationPageIndex = page;
-            },
+
+
             TicketQuery(){
                 let _this = this;
                 stations.Stations.map(function(item){
@@ -941,16 +954,17 @@
                     //  出发车站
                     this.poptipModels.leftStation = false;
                     this.orderAutoSubmitForm.leftStation = item;
-                }else if(type == 1){
+                }
+                else if(type == 2){
                     //  到达车站
                     this.poptipModels.arriveStation = false;
                     this.orderAutoSubmitForm.arriveStation = item;
                 }
 
             },
-            stationTabClick(name){
-                this.leftStationPageIndex = 1;
-                this.arriveStationPageIndex = 1;
+            stationTabClick(){
+                this.orderAutoSubmitForm.leftStationPageIndex = 1;
+                this.orderAutoSubmitForm.arriveStationPageIndex = 1;
             },
 
             leftStationInputFocus(){
@@ -1005,11 +1019,18 @@
                     }
                 }
             },
-
             leftStationPageChange(page){
-                this.orderAutoSubmitForm.leftStationSearch.pageIndex = page;
+                this.orderAutoSubmitForm.leftStationPageIndex = page
             },
             arriveStationPageChange(page){
+                this.orderAutoSubmitForm.arriveStationPageIndex = page;
+            },
+            leftStationSearchPageChange(page){
+                console.log("leftStationSearchPageChange");
+                this.orderAutoSubmitForm.leftStationSearch.pageIndex = page;
+            },
+            arriveStationSearchPageChange(page){
+                console.log("arriveStationSearchPageChange");
                 this.orderAutoSubmitForm.arriveStationSearch.pageIndex = page;
             },
 
@@ -1020,13 +1041,13 @@
             trainCodeSelectError(){
                 console.log("trainCodeSelectError");
                 if(this.orderAutoSubmitForm.leftStation.CNName == ''){
-                    this.orderAutoSubmitForm.ruleInline.leftStationError = true;
+                    this.orderAutoSubmitForm.ruleInline.leftStationRequireError = true;
                 }
                 if(this.orderAutoSubmitForm.arriveStation.CNName == ''){
-                    this.orderAutoSubmitForm.ruleInline.arriveStationError = true;
+                    this.orderAutoSubmitForm.ruleInline.arriveStationRequireError = true;
                 }
                 if(this.orderAutoSubmitForm.leftDate.date == ''){
-                    this.orderAutoSubmitForm.ruleInline.leftDateError = true;
+                    this.orderAutoSubmitForm.ruleInline.leftDateRequireError = true;
                 }
             },
             trainCodeSelectShow(){
@@ -1054,6 +1075,20 @@
             seatTypeSelectEvent(item){
                 this.orderAutoSubmitForm.seatType.seatOption = item;
                 this.poptipModels.seatType = false;
+            },
+            submitOrder(){
+                ajax.post('api/Station/submitOrder', {
+                    userName: '',
+                    leftStation: this.orderAutoSubmitForm.leftStation.Code,
+                    arriveStation: this.orderAutoSubmitForm.arriveStation.Code,
+                    leftDate: this.orderAutoSubmitForm.leftDate.date,
+                    trainCode: '',
+                    seatType: this.orderAutoSubmitForm.seatType.seatOption.type,
+                }).then(function(response){
+                    console.log(response)
+                }).catch(function(error){
+
+                });
             }
         }
     }

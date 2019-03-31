@@ -17,23 +17,23 @@
                     <div class="ivu-form-item-error-tip" v-show="validationError">请完成滑动验证</div>
                     <div class="ivu-form-item-error-tip" v-show="loginError">请输入正确的账号或密码</div>
                 </FormItem>
-                <FormItem style="margin-bottom: 5px;">
-                    <Row>
-                        <Col span="18">
-                            <FormItem>
-                                <CheckboxGroup >
-                                    <Checkbox label="记住密码"></Checkbox>
-                                </CheckboxGroup>
-                            </FormItem>
-                        </Col>
-                        <Col span="6">
-                            <a href="javascript:void(0)">忘记密码？</a>
-                        </Col>
-                    </Row>
-                </FormItem>
+                <!--<FormItem style="margin-bottom: 5px;">-->
+                    <!--<Row>-->
+                        <!--<Col span="18">-->
+                            <!--<FormItem>-->
+                                <!--<CheckboxGroup >-->
+                                    <!--<Checkbox label="记住密码"></Checkbox>-->
+                                <!--</CheckboxGroup>-->
+                            <!--</FormItem>-->
+                        <!--</Col>-->
+                        <!--<Col span="6">-->
+                            <!--<a href="javascript:void(0)">忘记密码？</a>-->
+                        <!--</Col>-->
+                    <!--</Row>-->
+                <!--</FormItem>-->
                 <FormItem>
                     <Button type="primary" @click="handleSubmit('formInline')" long size="large">登录</Button>
-                    <span style="position: relative; left: 120px;">还没有账号？<a href="javascript:void(0)">免费注册</a></span>
+                    <!--<span style="position: relative; left: 120px;">还没有账号？<a href="javascript:void(0)">免费注册</a></span>-->
                 </FormItem>
             </Form>
         </div>
@@ -46,7 +46,7 @@
     import jsencrypt from 'jsencrypt';
     import appconst from '../../lib/appconst';
     import ajax from '../../lib/ajax';
-    import { mapState } from 'vuex';
+    import Cookie from 'js-cookie';
     export default {
         data () {
             return {
@@ -102,9 +102,13 @@
                             let data = response.data;
                             console.log(response.data);
                             console.log(_this.formInline);
-                            if(data.code == 200){
+                            if(data.code === 200){
+                                Cookie.set('cj.token', data.data, { expires: 7 });
                                 _this.$Message.success('登录成功!');
-                            }else{
+                                window.location.reload();
+                                _this.$store.commit("home/initPageOpenedList");
+                            }
+                            else{
                                 _this.formInline.password = "";
                                 _this.loginError = true;
                             }

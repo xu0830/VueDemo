@@ -8,7 +8,7 @@ const ajax = axios.create({
 });
 
 ajax.interceptors.request.use(function(config){
-    config.headers.common["Authorization"]= Cookie.get("token")? Cookie.get("token") : '';
+    config.headers.common["Authorization"]= Cookie.get("cj.token")? Cookie.get("cj.token") : '';
     return config;
 });
 
