@@ -619,7 +619,8 @@
                 ticketTablePageIndex: 0,
                 orderAutoSubmitForm: {
                     passenger:{
-                        name: ''
+                        name: '',
+                        account: ''
                     },
                     leftStation: {
                         CNName: ''
@@ -691,7 +692,7 @@
                 },
                 validatePicPointData:[],
                 ticketData: [],
-                picToken: '',
+                passengerToken: '',
 
             }
         },
@@ -795,7 +796,7 @@
                     _this.validateImgLoading = false;
                     if(response.data.code == 200){
                         _this.validatePicUrl = response.data.data.imgUrl;
-                        _this.picToken = response.data.data.token;
+                        _this.passengerToken = response.data.data.token;
                     }else if(response.data.code == 204){
                         _this.validateImgLoadError = true;
                     }
@@ -899,7 +900,7 @@
                                 UserName: _this.formInline.userName,
                                 Password: _this.formInline.password,
                                 pointsData: pointsData,
-                                token: _this.picToken
+                                token: _this.passengerToken
                             }).then(function(response){
                                 _this.validatePicPointData = [];
                                 _this.loginLoading = false;
@@ -914,6 +915,8 @@
                                 else{
                                     _this.$store.commit('home/setPassenger', response.data.data);
                                     _this.loginModal = false;
+                                    _this.orderAutoSubmitForm.passenger.name = response.data.data.name;
+                                    _this.orderAutoSubmitForm.passenger.account = response.data.data.account;
                                     console.log(response.data.data);
                                     _this.$Message.success({
                                         content: "登录成功",
@@ -1078,12 +1081,20 @@
             },
             submitOrder(){
                 ajax.post('api/Station/submitOrder', {
-                    userName: '',
-                    leftStation: this.orderAutoSubmitForm.leftStation.Code,
-                    arriveStation: this.orderAutoSubmitForm.arriveStation.Code,
+                    userName: this.orderAutoSubmitForm.passenger.account,
+                    leftStation: {
+                        name: this.orderAutoSubmitForm.leftStation.CNName,
+                        code: this.orderAutoSubmitForm.leftStation.Code
+                    },
+                    arriveStation:{
+                        name:  this.orderAutoSubmitForm.arriveStation.CNName,
+                        code:  this.orderAutoSubmitForm.arriveStation.Code,
+                    },
                     leftDate: this.orderAutoSubmitForm.leftDate.date,
-                    trainCode: '',
+                    leftDateJs: encodeURI(new Date(this.orderAutoSubmitForm.leftDate.date).toString()),
+                    trainCode: this.orderAutoSubmitForm.trainCode.train.station_train_code,
                     seatType: this.orderAutoSubmitForm.seatType.seatOption.type,
+                    token: this.passengerToken
                 }).then(function(response){
                     console.log(response)
                 }).catch(function(error){

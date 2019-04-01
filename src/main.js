@@ -23,7 +23,10 @@ ajax.post('api/check/getUserSession',{
         },
         async mounted(){
             let _this = this;
-            _this.$store.commit('user/setUser');
+            _this.$store.commit('user/setUser', response.data.data.userId);
+            if(response.data.data.userId == 0){
+                localStorage.clear();
+            }
         }
     }).$mount('#app');
 
