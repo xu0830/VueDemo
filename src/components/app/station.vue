@@ -26,7 +26,7 @@
 
                         <!-- 出发车站 & 到达车站 -->
                         <Row>
-                            <Col span="6">
+                            <Col span="8">
                                 <span class="collapse-content-title">出发车站: </span>
                                 <div class="collapse-content-item">
                                     <span class="collapse-content-span"  v-if="orderAutoSubmitForm.leftStation.CNName != ''">
@@ -95,7 +95,7 @@
                                 </div>
                                 <span v-if="orderAutoSubmitForm.ruleInline.leftStationRequireError" class="collapsse-content-error">请选择出发车站</span>
                             </Col>
-                            <Col span="6">
+                            <Col span="8">
                                 <span class="collapse-content-title">到达车站: </span>
                                 <div class="collapse-content-item">
                                     <span class="collapse-content-span" v-if="orderAutoSubmitForm.arriveStation.CNName != ''">{{orderAutoSubmitForm.arriveStation.CNName}}</span>
@@ -799,10 +799,12 @@
                         _this.passengerToken = response.data.data.token;
                     }else if(response.data.code == 204){
                         _this.validateImgLoadError = true;
+                        _this.validatePicUrl = "";
                     }
                 }).catch(function(error){
                     _this.validateImgLoading = false;
                     _this.validateImgLoadError = true;
+                    _this.validatePicUrl = "";
                 });
             },
             departurePlaceSearch (value) {
@@ -1091,7 +1093,7 @@
                         code:  this.orderAutoSubmitForm.arriveStation.Code,
                     },
                     leftDate: this.orderAutoSubmitForm.leftDate.date,
-                    leftDateJs: encodeURI(new Date(this.orderAutoSubmitForm.leftDate.date).toString()),
+                    leftDateJs: new Date(this.orderAutoSubmitForm.leftDate.date+" 00:00:00").toString(),
                     trainCode: this.orderAutoSubmitForm.trainCode.train.station_train_code,
                     seatType: this.orderAutoSubmitForm.seatType.seatOption.type,
                     token: this.passengerToken
