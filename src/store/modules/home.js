@@ -41,8 +41,12 @@ const home = {
             localStorage.clear();
         },
         initPage(state){
-            state.pageOpenedList = JSON.parse(localStorage.pageOpenedList);
-            state.currentPage = localStorage.currentPage;
+            if(localStorage.getItem("pageOpenedList") != null){
+                state.pageOpenedList = JSON.parse(localStorage.pageOpenedList);
+            }
+            if(localStorage.getItem("currentPage") != null){
+                state.currentPage = localStorage.currentPage;
+            }
         },
         setCurrentPageName(state, name){
             state.currentPage = name;

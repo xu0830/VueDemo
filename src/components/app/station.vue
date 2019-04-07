@@ -21,6 +21,7 @@
                                         {{ currentPassenger.name != ''? "重新选择" : "请选择" }}
                                     </Button>
                                 </div>
+                                <span v-if="orderAutoSubmitForm.ruleInline.passengerRequireError" class="collapsse-content-error">请选择乘车人</span>
                             </Col>
                         </Row>
 
@@ -183,8 +184,8 @@
                                             </DatePicker>
                                         </div>
                                     </Poptip>
-                                    <span v-if="orderAutoSubmitForm.ruleInline.leftDateRequireError" class="collapsse-content-error">请选择出发日期</span>
                                 </div>
+                                <span v-if="orderAutoSubmitForm.ruleInline.leftDateRequireError" class="collapsse-content-error">请选择出发日期</span>
                             </Col>
                         </Row>
 
@@ -213,7 +214,7 @@
                                                     <span v-if="!trainCodeDataPageData.length > 0" style="margin-top: 20px;">
                                                         未找到任何车次
                                                     </span>
-                                                    <Page :total="orderAutoSubmitForm.trainCode.trainCodeData.length" :page-size="12" size="small" onchange="trainCodeDataPageChange"></Page>
+                                                    <Page :total="orderAutoSubmitForm.trainCode.trainCodeData.length" :page-size="12" size="small" @on-change="trainCodeDataPageChange"></Page>
                                                 </div>
                                                 <Spin fix v-if="orderAutoSubmitForm.trainCode.trainCodeDataLoading">加载中...</Spin>
                                                 <span fix v-if="orderAutoSubmitForm.trainCode.trainCodeDataLoadError">异常错误，请重试!</span>
@@ -221,6 +222,7 @@
                                         </div>
                                     </Poptip>
                                 </div>
+                                <span v-if="orderAutoSubmitForm.ruleInline.trainCodeRequireError" class="collapsse-content-error">请选择到达车站</span>
                             </Col>
                         </Row>
 
@@ -243,6 +245,35 @@
                                         </div>
                                     </Poptip>
                                 </div>
+                                <span v-if="orderAutoSubmitForm.ruleInline.seatTypeRequireError" class="collapsse-content-error">请选择席别</span>
+                            </Col>
+                        </Row>
+
+                        <!-- 邮箱 -->
+                        <Row>
+                            <Col span="8">
+                                <span class="collapse-content-title">通知邮箱: </span>
+                                <div class="collapse-content-item">
+                                    <span class="collapse-content-span collapse-content-span-large" v-if="orderAutoSubmitForm.noticeEmail.Email != ''">
+                                        {{orderAutoSubmitForm.noticeEmail.Email}}
+                                    </span>
+                                    <Poptip placement="right" width="300" word-wrap v-model="poptipModels.noticeEmail">
+                                        <Button type="dashed" size="small">
+                                            {{orderAutoSubmitForm.noticeEmail.Email== '' ? "请选择": "重新选择"}}
+                                        </Button>
+                                        <div slot="content" class="api select-content-div" :class="{'ivu-form-item-error': orderAutoSubmitForm.ruleInline.emailInputError}">
+                                            <Input placeholder="请输入通知邮箱" style="width:60%;" v-model="orderAutoSubmitForm.noticeEmail.EmailInput"
+                                            @on-focus="emailInputFocus"/>
+                                            <Button type="info" style="margin-left: 15px;" @click="emailInputEvent">确定</Button>
+                                            <div style="height: 20px;">
+                                                <span v-if="orderAutoSubmitForm.ruleInline.emailInputError" style="color: red;">
+                                                    请输入正确的邮箱
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </Poptip>
+                                </div>
+                                <span v-if="orderAutoSubmitForm.ruleInline.emailRequireError" class="collapsse-content-error">请选择通知邮箱</span>
                             </Col>
                         </Row>
 
@@ -331,6 +362,54 @@
             </div>
             <Spin size="large" fix v-if="loginLoading"></Spin>
         </Modal>
+
+        <Modal v-model="submitModal"
+               title="确认信息"
+            @on-ok="submitOrderConfirm">
+            <div>
+                <Row>
+                    <Col>
+                        <span class="collapse-content-title">乘车人: </span>
+                        <span>{{orderAutoSubmitForm.passenger.name}}</span>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span="8">
+                        <span class="collapse-content-title">出发车站: </span>
+                        <span>{{orderAutoSubmitForm.leftStation.CNName}}</span>
+                    </Col>
+                    <Col span="8">
+                        <span class="collapse-content-title">到达车站: </span>
+                        <span>{{orderAutoSubmitForm.arriveStation.CNName}}</span>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <span class="collapse-content-title">出发日期: </span>
+                        <span>{{orderAutoSubmitForm.leftDate.date}}</span>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <span class="collapse-content-title">车次: </span>
+                        <span>{{orderAutoSubmitForm.trainCode.train.station_train_code}}
+                            {{orderAutoSubmitForm.trainCode.train.start_time}}-{{orderAutoSubmitForm.trainCode.train.arrive_time}}</span>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <span class="collapse-content-title">二等座: </span>
+                        <span>{{orderAutoSubmitForm.seatType.seatOption.name}}</span>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <span class="collapse-content-title">通知邮箱: </span>
+                        <span>{{orderAutoSubmitForm.noticeEmail.Email}}</span>
+                    </Col>
+                </Row>
+            </div>
+        </Modal>
     </div>
 </template>
 
@@ -357,12 +436,14 @@
                     leftDate: false,
                     trainCode: false,
                     seatType: false,
+                    noticeEmail: false
                 },
                 validateImgLoading: false,
                 validateImgLoadError: false,
                 loginLoading: false,
                 ticketInfoSelect: ['0'],
                 loginModal: false,
+                submitModal: false,
                 departurePlace: {
                     CNAbbr: '',
                     CNName: '',
@@ -379,12 +460,12 @@
                 departureDateOption: {
                     disabledDate (date) {
                         return date
-                            && (date.valueOf() < Date.now() - 86400000
-                                || date.valueOf() > Date.now() + 29 * 86400000);
+                            && (date.valueOf() < Date.now() - 86400000)
+                                // || date.valueOf() > Date.now() + 29 * 86400000);
                     }
                 },
                 ticketLoading: false,
-                ticketDetailmodal: false,
+                ticketDetailModal: false,
                 validatePicUrl: '',
                 //  表头
                 ticketColumn:[
@@ -645,7 +726,11 @@
                         pageIndex: 1,
                     },
                     trainCode: {
-                        train: {},
+                        train: {
+                            station_train_code: '',
+                            arrive_time: '',
+                            start_time: ''
+                        },
                         trainCodeData: [],
                         trainCodeDataLoading: false,
                         trainCodeDataLoadError: false,
@@ -669,10 +754,19 @@
                             type: ''
                         }
                     },
+                    noticeEmail: {
+                        Email: '',
+                        EmailInput: ''
+                    },
                     ruleInline: {
+                        passengerRequireError: false,
                         leftStationRequireError: false,
                         arriveStationRequireError: false,
                         leftDateRequireError: false,
+                        trainCodeRequireError: false,
+                        seatTypeRequireError: false,
+                        emailRequireError: false,
+                        emailInputError: false
                     },
                 },
                 formInline: {
@@ -778,6 +872,7 @@
                     && this.orderAutoSubmitForm.leftDate.date != ''
             },
             trainCodeDataPageData(){
+                console.log(this.orderAutoSubmitForm.trainCode.pageIndex);
                 return this.orderAutoSubmitForm.trainCode.trainCodeData.slice((this.orderAutoSubmitForm.trainCode.pageIndex-1)*12, this.orderAutoSubmitForm.trainCode.pageIndex*12);
             }
         },
@@ -831,8 +926,6 @@
             ticketTablePageChange(page){
                 this.ticketTablePageIndex = page-1;
             },
-
-
             TicketQuery(){
                 let _this = this;
                 stations.Stations.map(function(item){
@@ -1044,7 +1137,6 @@
                 this.orderAutoSubmitForm.leftDate.date = date;
             },
             trainCodeSelectError(){
-                console.log("trainCodeSelectError");
                 if(this.orderAutoSubmitForm.leftStation.CNName == ''){
                     this.orderAutoSubmitForm.ruleInline.leftStationRequireError = true;
                 }
@@ -1081,27 +1173,77 @@
                 this.orderAutoSubmitForm.seatType.seatOption = item;
                 this.poptipModels.seatType = false;
             },
-            submitOrder(){
-                ajax.post('api/Station/submitOrder', {
-                    userName: this.orderAutoSubmitForm.passenger.account,
-                    leftStation: {
-                        name: this.orderAutoSubmitForm.leftStation.CNName,
-                        code: this.orderAutoSubmitForm.leftStation.Code
-                    },
-                    arriveStation:{
-                        name:  this.orderAutoSubmitForm.arriveStation.CNName,
-                        code:  this.orderAutoSubmitForm.arriveStation.Code,
-                    },
-                    leftDate: this.orderAutoSubmitForm.leftDate.date,
-                    leftDateJs: new Date(this.orderAutoSubmitForm.leftDate.date+" 00:00:00").toString(),
-                    trainCode: this.orderAutoSubmitForm.trainCode.train.station_train_code,
-                    seatType: this.orderAutoSubmitForm.seatType.seatOption.type,
-                    token: this.passengerToken
-                }).then(function(response){
-                    console.log(response)
-                }).catch(function(error){
+            emailInputFocus(){
+                this.orderAutoSubmitForm.ruleInline.emailInputError = false;
+            },
+            emailInputEvent(){
+                var regEmail = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$");
+                // var regEmail = /^((([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6}\;))*(([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6}) n ))$/;
+                if(!regEmail.test(this.orderAutoSubmitForm.noticeEmail.EmailInput)){
+                    this.orderAutoSubmitForm.ruleInline.emailInputError = true;
+                }else{
+                    this.poptipModels.noticeEmail = false;
+                    this.orderAutoSubmitForm.noticeEmail.Email = this.orderAutoSubmitForm.noticeEmail.EmailInput;
+                }
 
-                });
+            },
+            submitOrder(){
+                let submitError = false;
+                if(this.orderAutoSubmitForm.passenger.name == ''){
+                    this.orderAutoSubmitForm.ruleInline.passengerRequireError = true;
+                    submitError = true;
+                }
+                if(this.orderAutoSubmitForm.leftStation.CNName == ''){
+                    this.orderAutoSubmitForm.ruleInline.leftStationRequireError = true;
+                    submitError = true;
+                }
+                if(this.orderAutoSubmitForm.arriveStation.CNName == ''){
+                    this.orderAutoSubmitForm.ruleInline.arriveStationRequireError = true;
+                    submitError = true;
+                }
+                if(this.orderAutoSubmitForm.leftDate.date == ''){
+                    this.orderAutoSubmitForm.ruleInline.leftDateRequireError = true;
+                    submitError = true;
+                }
+                if(this.orderAutoSubmitForm.trainCode.train.station_train_code == ''){
+                    this.orderAutoSubmitForm.ruleInline.trainCodeRequireError = true;
+                    submitError = true;
+                }
+                if(this.orderAutoSubmitForm.seatType.seatOption.type == ''){
+                    this.orderAutoSubmitForm.ruleInline.seatTypeRequireError = true;
+                    submitError = true;
+                }
+                if(this.orderAutoSubmitForm.noticeEmail.Email == ''){
+                    this.orderAutoSubmitForm.ruleInline.emailRequireError = true;
+                    submitError = true;
+                }
+                if(submitError){
+                    return false;
+                }
+                this.submitModal = true;
+            },
+            submitOrderConfirm(){
+                // ajax.post('api/Station/submitOrder', {
+                //     userName: this.orderAutoSubmitForm.passenger.account,
+                //     leftStation: {
+                //         name: this.orderAutoSubmitForm.leftStation.CNName,
+                //         code: this.orderAutoSubmitForm.leftStation.Code
+                //     },
+                //     arriveStation:{
+                //         name:  this.orderAutoSubmitForm.arriveStation.CNName,
+                //         code:  this.orderAutoSubmitForm.arriveStation.Code,
+                //     },
+                //     leftDate: this.orderAutoSubmitForm.leftDate.date,
+                //     leftDateJs: new Date(this.orderAutoSubmitForm.leftDate.date+" 00:00:00").toString(),
+                //     trainCode: this.orderAutoSubmitForm.trainCode.train.station_train_code,
+                //     seatType: this.orderAutoSubmitForm.seatType.seatOption.type,
+                //     token: this.passengerToken
+                // }).then(function(response){
+                //     console.log(response)
+                // }).catch(function(error){
+                //
+                // });
+                console.log("确定");
             }
         }
     }
@@ -1155,7 +1297,7 @@
         border-bottom: 1.5px solid #dcdee2;
     }
 
-    .collapse-content-div .collapse-content-title{
+    .collapse-content-title{
         margin-right: 15px;
         display: inline-block;
         width: 80px;
@@ -1165,21 +1307,25 @@
         font-family: "Sitka Small";
     }
 
-    .collapse-content-div .collapsse-content-error{
+   .collapsse-content-error{
         margin-left: 20px;
         color: red;
     }
 
-    .collapse-content-div .collapse-content-item{
+    .collapse-content-item{
         display: inline-block;
     }
 
-    .collapse-content-div .collapse-content-span{
+    .collapse-content-span{
         font-size: 12px;
         border-radius: 3px;
         display: inline-block;
         width: 70px;
         text-align: center;
+    }
+
+   .collapse-content-span-large{
+        width: 150px;
     }
 
     .select-content-div{
