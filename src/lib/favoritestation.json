@@ -1,6 +1,19 @@
 {
     "Stations": [
         {
+            "CNAbbr": "szh",
+            "CNName": "深圳",
+            "Code": "SZQ",
+            "Index": "shenzhen"
+        },
+        {
+            "CNAbbr": "pni",
+            "CNName": "普宁",
+            "Code": "PEQ",
+            "Index": "2546"
+        },
+
+        {
             "CNAbbr": "bji",
             "CNName": "北京",
             "Code": "BJP",
@@ -186,12 +199,7 @@
             "Code": "ZZF",
             "Index": "30"
         },
-        {
-            "CNAbbr": "szh",
-            "CNName": "深圳",
-            "Code": "SZQ",
-            "Index": "shenzhen"
-        },
+
         {
             "CNAbbr": "xme",
             "CNName": "厦门",

@@ -873,7 +873,7 @@
                     && this.orderAutoSubmitForm.leftDate.date != ''
             },
             trainCodeDataPageData(){
-                console.log(this.orderAutoSubmitForm.trainCode.pageIndex);
+
                 return this.orderAutoSubmitForm.trainCode.trainCodeData.slice((this.orderAutoSubmitForm.trainCode.pageIndex-1)*12, this.orderAutoSubmitForm.trainCode.pageIndex*12);
             }
         },
@@ -1157,6 +1157,14 @@
                     to_station_code: _this.orderAutoSubmitForm.arriveStation.Code,
                 }).then(function(response){
                     _this.orderAutoSubmitForm.trainCode.trainCodeDataLoading = false;
+
+                    console.log(_this.orderAutoSubmitForm.trainCode.train);
+
+
+                    _.pullAll(response.data.data, _this.orderAutoSubmitForm.trainCode.train);
+                    // console.log(this.orderAutoSubmitForm.trainCode.trainCodeData);
+                    console.log(response.data.data);
+
                     _this.orderAutoSubmitForm.trainCode.trainCodeData = response.data.data;
                 }).catch(function(error){
                     _this.orderAutoSubmitForm.trainCode.trainCodeDataLoading = false;
@@ -1168,6 +1176,8 @@
             },
             trainCodeSelectEvent(item){
                 // this.poptipModels.trainCode = false;
+
+                console.log(this.orderAutoSubmitForm.trainCode.trainCodeData);
                 this.orderAutoSubmitForm.trainCode.train.push(item);
             },
             trainCodeConfirm(){
