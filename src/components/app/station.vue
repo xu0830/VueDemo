@@ -191,21 +191,21 @@
 
                         <!-- 车次 -->
                         <Row>
-                            <Col span="8">
+                            <Col span="24">
                                 <span class="collapse-content-title">车次: </span>
                                 <div class="collapse-content-item">
                                     <Button type="dashed" size="small" @click="trainCodeSelectError" v-if="!trainCodeSelectEnable">
                                         请选择
                                     </Button>
-                                    <span class="collapse-content-span" v-if="orderAutoSubmitForm.trainCode.train.station_train_code">{{orderAutoSubmitForm.trainCode.train.station_train_code}}</span>
+                                    <span class="collapse-content-span collapse-content-span-large" v-if="orderAutoSubmitForm.trainCode.train.length>0" v-for="item in orderAutoSubmitForm.trainCode.train">{{item.station_train_code }}({{item.start_time}}-{{item.arrive_time}})</span>
                                     <Poptip v-if="trainCodeSelectEnable" placement="right" width="500" word-wrap
                                             v-model="poptipModels.trainCode" @on-popper-show="trainCodeSelectShow">
                                         <Button type="dashed" size="small">
-                                            {{orderAutoSubmitForm.trainCode.train.station_train_code? "重新选择" : "请选择"}}
+                                            {{orderAutoSubmitForm.trainCode.train.length>0? "重新选择" : "请选择"}}
                                         </Button>
                                         <div class="api select-content-div" slot="content" >
-                                            <Input placeholder="请选择车次" style="width:40%;"/>
-                                            <Button type="info" style="margin-left: 15px;">确定</Button>
+                                            <Input placeholder="最多选择5个车次" style="width:40%;"/>
+                                            <Button type="info" style="margin-left: 15px;" @click="trainCodeConfirm">确定</Button>
                                             <div style="position: relative">
                                                 <div class="select-train-div">
                                                     <Button v-for="item in trainCodeDataPageData" type="text" size="small" @click="trainCodeSelectEvent(item)">
@@ -726,11 +726,12 @@
                         pageIndex: 1,
                     },
                     trainCode: {
-                        train: {
-                            station_train_code: '',
-                            arrive_time: '',
-                            start_time: ''
-                        },
+                        // train: {
+                        //     station_train_code: '',
+                        //     arrive_time: '',
+                        //     start_time: ''
+                        // },
+                        train:[],
                         trainCodeData: [],
                         trainCodeDataLoading: false,
                         trainCodeDataLoadError: false,
@@ -1166,8 +1167,11 @@
                 this.orderAutoSubmitForm.trainCode.pageIndex = page;
             },
             trainCodeSelectEvent(item){
-                this.poptipModels.trainCode = false;
-                this.orderAutoSubmitForm.trainCode.train = item;
+                // this.poptipModels.trainCode = false;
+                this.orderAutoSubmitForm.trainCode.train.push(item);
+            },
+            trainCodeConfirm(){
+
             },
             seatTypeSelectEvent(item){
                 this.orderAutoSubmitForm.seatType.seatOption = item;
