@@ -1,6 +1,7 @@
 const Util = {
     session: {
-        userId: 0
+        userId: 0,
+        userName: '',
     }
 };
 

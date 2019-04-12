@@ -14,8 +14,8 @@
                 </FormItem>
                 <FormItem label="滑动验证" style="margin-bottom: 20px;">
                     <picValidation ref="picValidation" :dragDistance="sliderDragDistance"></picValidation>
-                    <div class="ivu-form-item-error-tip" v-show="validationError">请完成滑动验证</div>
-                    <div class="ivu-form-item-error-tip" v-show="loginError">请输入正确的账号或密码</div>
+                    <div class="ivu-form-item-error-tip" v-if="validationError">请完成滑动验证</div>
+                    <div class="ivu-form-item-error-tip" v-if="loginError == ''">{{loginError}}</div>
                 </FormItem>
                 <!--<FormItem style="margin-bottom: 5px;">-->
                     <!--<Row>-->
@@ -56,7 +56,7 @@
                     rememberMe: ''
                 },
                 validationError: false,
-                loginError: false,
+                loginError: '',
                 ruleInline: {
                     user: [
                         { required: true, message: '请输入账号', trigger: 'blur' }
@@ -100,8 +100,6 @@
                         }).then(function(response){
                             _this.loginError = false;
                             let data = response.data;
-                            console.log(response.data);
-                            console.log(_this.formInline);
                             if(data.code === 200){
                                 Cookie.set('cj.token', data.data, { expires: 7 });
                                 _this.$Message.success('登录成功!');
@@ -110,7 +108,7 @@
                             }
                             else{
                                 _this.formInline.password = "";
-                                _this.loginError = true;
+                                _this.loginError = data.result;
                             }
                         });
 

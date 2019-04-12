@@ -27,13 +27,14 @@
             </Sider>
             <Layout>
                 <Header>
-                        <Row type="flex" justify="end"  class="code-row-bg">
-                            <Col span="24">
-                                <Breadcrumb>
-                                    <BreadcrumbItem v-for="item in currentPath" :key="item.name">{{item.meta.title}}</BreadcrumbItem>
-                                </Breadcrumb>
-                            </Col>
-                        </Row>
+                        <!--<Row type="flex" justify="end"  class="code-row-bg">-->
+                            <!--<Col span="24">-->
+                                <!--<Breadcrumb>-->
+                                    <!--<BreadcrumbItem v-for="item in currentPath" :key="item.name">{{item.meta.title}}</BreadcrumbItem>-->
+                                <!--</Breadcrumb>-->
+                            <!--</Col>-->
+                        <!--</Row>-->
+                        <>
                     </Header>
                 <tag-pages-opened class="tag-pages-opened"></tag-pages-opened>
                 <Content class="page-content">

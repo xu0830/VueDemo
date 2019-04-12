@@ -14,11 +14,11 @@
                             <Col span="8">
                                 <span class="collapse-content-title">乘车人: </span>
                                 <div class="collapse-content-item">
-                                    <span v-if="currentPassenger.name != ''" class="collapse-content-span">
-                                        {{currentPassenger.name}}
+                                    <span v-if="orderAutoSubmitForm.passenger.name != ''" class="collapse-content-span">
+                                        {{orderAutoSubmitForm.passenger.name}}
                                     </span>
                                     <Button type="dashed" size="small" @click="loginModalClick">
-                                        {{ currentPassenger.name != ''? "重新选择" : "请选择" }}
+                                        {{ orderAutoSubmitForm.passenger.name != ''? "重新选择" : "请选择" }}
                                     </Button>
                                 </div>
                                 <span v-if="orderAutoSubmitForm.ruleInline.passengerRequireError" class="collapsse-content-error">请选择乘车人</span>
@@ -197,19 +197,28 @@
                                     <Button type="dashed" size="small" @click="trainCodeSelectError" v-if="!trainCodeSelectEnable">
                                         请选择
                                     </Button>
-                                    <span class="collapse-content-span collapse-content-span-large" v-if="orderAutoSubmitForm.trainCode.train.length>0" v-for="item in orderAutoSubmitForm.trainCode.train">{{item.station_train_code }}({{item.start_time}}-{{item.arrive_time}})</span>
-                                    <Poptip v-if="trainCodeSelectEnable" placement="right" width="500" word-wrap
+                                    <span class="collapse-content-span collapse-content-span-large" v-if="orderAutoSubmitForm.trainCode.train.length>0" v-for="item in orderAutoSubmitForm.trainCode.train">
+                                        {{item.station_train_code }}({{item.start_time}}-{{item.arrive_time}})
+                                        <Icon style="cursor: pointer" type="md-close" size="14" @click="trainCodeRemoveEvent(item)"/>
+                                    </span>
+                                    <Poptip v-if="trainCodeSelectEnable" placement="right" width="720" word-wrap
                                             v-model="poptipModels.trainCode" @on-popper-show="trainCodeSelectShow">
-                                        <Button type="dashed" size="small">
-                                            {{orderAutoSubmitForm.trainCode.train.length>0? "重新选择" : "请选择"}}
+                                        <Button type="dashed" size="small" @click.native="trainCodeSelectShow" :disabled="orderAutoSubmitForm.trainCode.train.length>4">
+                                            {{orderAutoSubmitForm.trainCode.train.length<=0? "请选择" : orderAutoSubmitForm.trainCode.train.length>4? "最多选择5个车次": "重新选择"}}
                                         </Button>
                                         <div class="api select-content-div" slot="content" >
-                                            <Input placeholder="最多选择5个车次" style="width:40%;"/>
-                                            <Button type="info" style="margin-left: 15px;" @click="trainCodeConfirm">确定</Button>
+                                            <span style="font-weight: bold; margin: 20px 0 0 23px; font-size: 15px;">最多选择5个车次</span>
+                                            <span style="position: absolute; right: 20px; top: 10px; cursor: pointer;" @click="trainCodeConfirm">
+                                                <Icon type="md-close" size="20"/>
+                                            </span>
+                                            <!--<icon type="text" style="margin-left: 15px;" @click="trainCodeConfirm">关闭</Button>-->
                                             <div style="position: relative">
                                                 <div class="select-train-div">
-                                                    <Button v-for="item in trainCodeDataPageData" type="text" size="small" @click="trainCodeSelectEvent(item)">
-                                                        <span style="font-size: 14px; font-weight: bold;">{{item.station_train_code}}</span>({{item.start_time}}-{{item.arrive_time}})
+                                                    <Button class="button-long" v-for="item in trainCodeDataPageData" type="text" size="small" long @click="trainCodeSelectEvent(item)">
+                                                        <span style="font-size: 12px; font-weight: bold;">
+                                                            {{item.from_station_name + "--" + item.to_station_name + " " + item.station_train_code}}
+                                                        </span>
+                                                        ({{item.start_time}}-{{item.arrive_time}})
                                                     </Button>
                                                     <span v-if="!trainCodeDataPageData.length > 0" style="margin-top: 20px;">
                                                         未找到任何车次
@@ -234,7 +243,7 @@
                                     <span class="collapse-content-span" v-if="orderAutoSubmitForm.seatType.seatOption.name != ''">
                                         {{orderAutoSubmitForm.seatType.seatOption.name}}
                                     </span>
-                                    <Poptip placement="right" width="300" word-wrap v-model="poptipModels.seatType">
+                                    <Poptip placement="right" width="300" word-wrap v-model="poptipModels.seatType" @on-popper-show="orderAutoSubmitForm.ruleInline.seatTypeRequireError=false">
                                         <Button type="dashed" size="small">
                                             {{orderAutoSubmitForm.seatType.seatOption.name == ''? "请选择": "重新选择"}}
                                         </Button>
@@ -257,13 +266,22 @@
                                     <span class="collapse-content-span collapse-content-span-large" v-if="orderAutoSubmitForm.noticeEmail.Email != ''">
                                         {{orderAutoSubmitForm.noticeEmail.Email}}
                                     </span>
-                                    <Poptip placement="right" width="300" word-wrap v-model="poptipModels.noticeEmail">
+                                    <Poptip placement="right" width="330" word-wrap v-model="poptipModels.noticeEmail" @on-popper-show="orderAutoSubmitForm.ruleInline.emailRequireError=false">
                                         <Button type="dashed" size="small">
                                             {{orderAutoSubmitForm.noticeEmail.Email== '' ? "请选择": "重新选择"}}
                                         </Button>
                                         <div slot="content" class="api select-content-div" :class="{'ivu-form-item-error': orderAutoSubmitForm.ruleInline.emailInputError}">
-                                            <Input placeholder="请输入通知邮箱" style="width:60%;" v-model="orderAutoSubmitForm.noticeEmail.EmailInput"
-                                            @on-focus="emailInputFocus"/>
+                                            <!--<Input placeholder="请输入通知邮箱" style="width:60%;" v-model="orderAutoSubmitForm.noticeEmail.EmailInput"-->
+                                            <!--@on-focus="emailInputFocus"/>-->
+
+                                            <AutoComplete
+                                                    v-model="orderAutoSubmitForm.noticeEmail.EmailInput"
+                                                    @on-search="emailInputFocus"
+                                                    placeholder="请输入通知邮箱"
+                                                    style="width:65%">
+                                                <Option v-for="item in orderAutoSubmitForm.noticeEmail.EmailData" :value="item" :key="item">{{ item }}</Option>
+                                            </AutoComplete>
+
                                             <Button type="info" style="margin-left: 15px;" @click="emailInputEvent">确定</Button>
                                             <div style="height: 20px;">
                                                 <span v-if="orderAutoSubmitForm.ruleInline.emailInputError" style="color: red;">
@@ -391,14 +409,17 @@
                 </Row>
                 <Row>
                     <Col>
-                        <span class="collapse-content-title">车次: </span>
-                        <span>{{orderAutoSubmitForm.trainCode.train.station_train_code}}
-                            {{orderAutoSubmitForm.trainCode.train.start_time}}-{{orderAutoSubmitForm.trainCode.train.arrive_time}}</span>
+                        <span class="collapse-content-title" style="vertical-align: top;">备选车次: </span>
+                        <div style="display: inline-block; width: 80%; ">
+                            <span style="margin-right: 20px;" v-for="item in orderAutoSubmitForm.trainCode.train">
+                                {{item.station_train_code}}{{item.start_time}}-{{item.arrive_time}}
+                            </span>
+                        </div>
                     </Col>
                 </Row>
                 <Row>
                     <Col>
-                        <span class="collapse-content-title">二等座: </span>
+                        <span class="collapse-content-title">席别: </span>
                         <span>{{orderAutoSubmitForm.seatType.seatOption.name}}</span>
                     </Col>
                 </Row>
@@ -671,7 +692,6 @@
                                         },
                                         on: {
                                             click: () => {
-                                                console.log("预订");
                                                 // this.show(params.index)
                                             }
                                         }
@@ -757,7 +777,8 @@
                     },
                     noticeEmail: {
                         Email: '',
-                        EmailInput: ''
+                        EmailInput: '',
+                        EmailData: []
                     },
                     ruleInline: {
                         passengerRequireError: false,
@@ -873,7 +894,9 @@
                     && this.orderAutoSubmitForm.leftDate.date != ''
             },
             trainCodeDataPageData(){
-
+                _.pullAllWith(this.orderAutoSubmitForm.trainCode.trainCodeData, this.orderAutoSubmitForm.trainCode.train, function(obj, other){
+                    return obj.station_train_code === other.station_train_code;
+                });
                 return this.orderAutoSubmitForm.trainCode.trainCodeData.slice((this.orderAutoSubmitForm.trainCode.pageIndex-1)*12, this.orderAutoSubmitForm.trainCode.pageIndex*12);
             }
         },
@@ -973,6 +996,7 @@
             },
             loginModalClick(){
                 this.loginModal = true;
+                this.orderAutoSubmitForm.ruleInline.passengerRequireError = false;
                 this.getValidateImg();
             },
             loginModalCancel(){
@@ -1013,7 +1037,6 @@
                                     _this.loginModal = false;
                                     _this.orderAutoSubmitForm.passenger.name = response.data.data.name;
                                     _this.orderAutoSubmitForm.passenger.account = response.data.data.account;
-                                    console.log(response.data.data);
                                     _this.$Message.success({
                                         content: "登录成功",
                                         duration: 1.5
@@ -1045,7 +1068,6 @@
             userDtoBtn(){
                 ajax.post('api/Station/GetPassengerDto', {
                 }).then(function(response){
-                    console.log(response);
                 });
             },
             stationSelectEvent(item, type){
@@ -1125,11 +1147,9 @@
                 this.orderAutoSubmitForm.arriveStationPageIndex = page;
             },
             leftStationSearchPageChange(page){
-                console.log("leftStationSearchPageChange");
                 this.orderAutoSubmitForm.leftStationSearch.pageIndex = page;
             },
             arriveStationSearchPageChange(page){
-                console.log("arriveStationSearchPageChange");
                 this.orderAutoSubmitForm.arriveStationSearch.pageIndex = page;
             },
 
@@ -1150,6 +1170,7 @@
             },
             trainCodeSelectShow(){
                 let _this = this;
+                this.orderAutoSubmitForm.ruleInline.trainCodeRequireError = false;
                 this.orderAutoSubmitForm.trainCode.trainCodeDataLoading = true;
                 ajax.post('api/Station/ticketQuery', {
                     Train_date: _this.orderAutoSubmitForm.leftDate.date,
@@ -1157,13 +1178,6 @@
                     to_station_code: _this.orderAutoSubmitForm.arriveStation.Code,
                 }).then(function(response){
                     _this.orderAutoSubmitForm.trainCode.trainCodeDataLoading = false;
-
-                    console.log(_this.orderAutoSubmitForm.trainCode.train);
-
-
-                    _.pullAll(response.data.data, _this.orderAutoSubmitForm.trainCode.train);
-                    // console.log(this.orderAutoSubmitForm.trainCode.trainCodeData);
-                    console.log(response.data.data);
 
                     _this.orderAutoSubmitForm.trainCode.trainCodeData = response.data.data;
                 }).catch(function(error){
@@ -1175,13 +1189,19 @@
                 this.orderAutoSubmitForm.trainCode.pageIndex = page;
             },
             trainCodeSelectEvent(item){
-                // this.poptipModels.trainCode = false;
-
-                console.log(this.orderAutoSubmitForm.trainCode.trainCodeData);
                 this.orderAutoSubmitForm.trainCode.train.push(item);
+                if(this.orderAutoSubmitForm.trainCode.train.length>4){
+                    this.poptipModels.trainCode = false;
+                }
+            },
+            trainCodeRemoveEvent(item){
+                _.remove(this.orderAutoSubmitForm.trainCode.train, function(n){
+                    return n.station_train_code === item.station_train_code;
+                });
+                this.orderAutoSubmitForm.trainCode.train.sort();
             },
             trainCodeConfirm(){
-
+                this.poptipModels.trainCode = false;
             },
             seatTypeSelectEvent(item){
                 this.orderAutoSubmitForm.seatType.seatOption = item;
@@ -1189,6 +1209,18 @@
             },
             emailInputFocus(){
                 this.orderAutoSubmitForm.ruleInline.emailInputError = false;
+                this.orderAutoSubmitForm.noticeEmail.EmailData = !this.orderAutoSubmitForm.noticeEmail.EmailInput || this.orderAutoSubmitForm.noticeEmail.EmailInput.indexOf('@') >= 0 ? [] : [
+                    this.orderAutoSubmitForm.noticeEmail.EmailInput + '@163.com',
+                    this.orderAutoSubmitForm.noticeEmail.EmailInput + '@qq.com',
+                    this.orderAutoSubmitForm.noticeEmail.EmailInput + '@126.com',
+                    this.orderAutoSubmitForm.noticeEmail.EmailInput + '@sina.com',
+                    this.orderAutoSubmitForm.noticeEmail.EmailInput + '@sina.cn',
+                    this.orderAutoSubmitForm.noticeEmail.EmailInput + '@aliyun.com',
+                    this.orderAutoSubmitForm.noticeEmail.EmailInput + '@gmail.com',
+                    this.orderAutoSubmitForm.noticeEmail.EmailInput + '@vip.163.com',
+                    this.orderAutoSubmitForm.noticeEmail.EmailInput + '@vip.126.com',
+                    this.orderAutoSubmitForm.noticeEmail.EmailInput + '@188.com',
+                ];
             },
             emailInputEvent(){
                 var regEmail = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$");
@@ -1219,7 +1251,7 @@
                     this.orderAutoSubmitForm.ruleInline.leftDateRequireError = true;
                     submitError = true;
                 }
-                if(this.orderAutoSubmitForm.trainCode.train.station_train_code == ''){
+                if(this.orderAutoSubmitForm.trainCode.train.length <= 0){
                     this.orderAutoSubmitForm.ruleInline.trainCodeRequireError = true;
                     submitError = true;
                 }
@@ -1237,27 +1269,45 @@
                 this.submitModal = true;
             },
             submitOrderConfirm(){
-                // ajax.post('api/Station/submitOrder', {
-                //     userName: this.orderAutoSubmitForm.passenger.account,
-                //     leftStation: {
-                //         name: this.orderAutoSubmitForm.leftStation.CNName,
-                //         code: this.orderAutoSubmitForm.leftStation.Code
-                //     },
-                //     arriveStation:{
-                //         name:  this.orderAutoSubmitForm.arriveStation.CNName,
-                //         code:  this.orderAutoSubmitForm.arriveStation.Code,
-                //     },
-                //     leftDate: this.orderAutoSubmitForm.leftDate.date,
-                //     leftDateJs: new Date(this.orderAutoSubmitForm.leftDate.date+" 00:00:00").toString(),
-                //     trainCode: this.orderAutoSubmitForm.trainCode.train.station_train_code,
-                //     seatType: this.orderAutoSubmitForm.seatType.seatOption.type,
-                //     token: this.passengerToken
-                // }).then(function(response){
-                //     console.log(response)
-                // }).catch(function(error){
-                //
-                // });
-                console.log("确定");
+                let _this = this;
+                let trainCodes = [];
+                this.orderAutoSubmitForm.trainCode.train.map(function(item){
+                    trainCodes.push(item.station_train_code);
+                });
+
+                ajax.post('api/Station/submitOrder', {
+                    UserName: this.orderAutoSubmitForm.passenger.account,
+                    LeftStation: {
+                        name: this.orderAutoSubmitForm.leftStation.CNName,
+                        code: this.orderAutoSubmitForm.leftStation.Code
+                    },
+                    ArriveStation:{
+                        name:  this.orderAutoSubmitForm.arriveStation.CNName,
+                        code:  this.orderAutoSubmitForm.arriveStation.Code,
+                    },
+                    LeftDate: this.orderAutoSubmitForm.leftDate.date,
+                    LeftDateJs: new Date(this.orderAutoSubmitForm.leftDate.date+" 00:00:00").toString(),
+                    TrainCodes:trainCodes,
+                    SeatType: this.orderAutoSubmitForm.seatType.seatOption.type,
+                    NoticeEmail: this.orderAutoSubmitForm.noticeEmail.Email,
+                    Token: this.passengerToken
+                }).then(function(response){
+                    if(response.data.code == 200){
+                        Object.assign(_this.$data, _this.$options.data());
+                        _this.$Message.success({
+                            content: response.data.result,
+                            duration: 2
+                        });
+                    }else{
+                        _this.$Message.error({
+                            content: response.data.result,
+                            duration: 2
+                        });
+                    }
+
+                }).catch(function(error){
+
+                });
             }
         }
     }
@@ -1279,6 +1329,9 @@
         max-width: 800px;
     }
 
+    .button-long{
+        width: 205px!important;
+    }
 
     .ivu-page{
         margin-top: 10px;
@@ -1357,12 +1410,12 @@
     }
 
     .select-train-div{
-        padding: 10px;
+        padding: 5px;
     }
 
     .select-train-div button{
         width: 120px;
-        margin-right: 20px;
+        margin-right: 10px;
     }
 
     /* 验证图片加载动画 */
