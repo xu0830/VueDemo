@@ -172,14 +172,16 @@
     .container{
         width: 100%;
         height: 100%;
-        background: #E9EEF3;
+        /*background-color: #E9EEF3;*/
         padding-top: 120px;
         position: relative;
+        background: url("../../assets/background.jpg") no-repeat;
+        background-size:100% 100%;
     }
 
     .form-block{
         width: 380px;
-        height: 360px;
+        height: 300px;
         background: #fff;
         border-radius: 10px;
         padding: 20px;

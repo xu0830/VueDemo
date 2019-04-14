@@ -34,8 +34,22 @@
                                 <!--</Breadcrumb>-->
                             <!--</Col>-->
                         <!--</Row>-->
-                        <>
-                    </Header>
+                    <Row>
+                        <Col>
+                            <Upload action="http://localhost:63661/api/file/upload">
+                                <Button icon="ios-cloud-upload-outline">Upload files</Button>
+                            </Upload>
+                        </Col>
+                    </Row>
+                    <Row type="flex" justify="end">
+                        <Col span="3">
+                            <Avatar icon="ios-person" size="large" />
+                            <a href="javascript: void(0)" class="header-logout">
+                                <Icon type="ios-log-out" size="26" />
+                            </a>
+                        </Col>
+                    </Row>
+                </Header>
                 <tag-pages-opened class="tag-pages-opened"></tag-pages-opened>
                 <Content class="page-content">
                     <div class="page-content-container">
@@ -94,6 +108,8 @@
 </script>
 
 <style scoped>
+
+
     .layout{
         width: 100%;
         height: 100%;
@@ -118,6 +134,7 @@
         color: #fff!important;
     }
 
+
     .ivu-layout-header{
         background: #fff;
         padding: 0 30px 0 40px;
@@ -134,6 +151,16 @@
         box-shadow: 2px 2px 5px rgba(0,0,0,.12), -2px -2px 5px rgba(0,0,0,.12);
         min-width: 1200px;
     }
+
+    a.header-logout{
+        color: #2d374b;
+        margin: 0 10px;
+    }
+
+    a.header-logout:hover{
+        color: #ff5d23;
+    }
+
 
     .page-content{
         padding: 20px;
