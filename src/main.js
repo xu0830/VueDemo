@@ -13,7 +13,6 @@ Vue.use(iView);
 
 ajax.post('api/check/getUserSession',{
 }).then(function(response){
-    console.log(response);
     Util.session = response.data.data;
     new Vue({
         render: h => h(App),

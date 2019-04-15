@@ -12,7 +12,6 @@ export const router = new VueRouter(RouterConfig);
 
 //  注册全局前置守卫
 router.beforeEach((to, from, next) => {
-    console.log(Util.session);
     if(Util.session.userId == 0 && to.name !== 'login'){
         next({
             name: 'login'

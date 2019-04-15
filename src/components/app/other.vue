@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Button @click="clickEvent">点击</Button>
+        菜单-其他 内容
     </div>
 </template>
 
@@ -14,7 +14,6 @@
         },
         methods:{
             clickEvent(){
-                console.log("clickEvent");
             }
         }
     }

@@ -148,7 +148,6 @@
                             canvas_move.restore();
                         },
                             img.onerror = function(){
-                                console.log("load image error!");
                             }
                         let pic_index = Math.floor(Math.random() * 10);
                         img.src = imgs[pic_index];

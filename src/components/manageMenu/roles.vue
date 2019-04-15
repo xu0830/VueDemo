@@ -1,6 +1,6 @@
 <template>
     <div>
-        roles component
+        菜单-权限 内容
     </div>
 </template>
 

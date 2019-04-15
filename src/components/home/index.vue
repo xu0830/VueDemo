@@ -1,6 +1,6 @@
 <template>
     <div class="component-content">
-        index component
+        主页内容
     </div>
 </template>
 

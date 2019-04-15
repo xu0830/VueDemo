@@ -27,25 +27,11 @@
             </Sider>
             <Layout>
                 <Header>
-                        <!--<Row type="flex" justify="end"  class="code-row-bg">-->
-                            <!--<Col span="24">-->
-                                <!--<Breadcrumb>-->
-                                    <!--<BreadcrumbItem v-for="item in currentPath" :key="item.name">{{item.meta.title}}</BreadcrumbItem>-->
-                                <!--</Breadcrumb>-->
-                            <!--</Col>-->
-                        <!--</Row>-->
-                    <Row>
-                        <Col>
-                            <Upload action="http://localhost:63661/api/file/upload">
-                                <Button icon="ios-cloud-upload-outline">Upload files</Button>
-                            </Upload>
-                        </Col>
-                    </Row>
                     <Row type="flex" justify="end">
                         <Col span="3">
                             <Avatar icon="ios-person" size="large" />
-                            <a href="javascript: void(0)" class="header-logout">
-                                <Icon type="ios-log-out" size="26" />
+                            <a href="javascript: void(0)" class="header-logout" @click="logoutModal = true">
+                                <Icon type="ios-log-out" size="22" />
                             </a>
                         </Col>
                     </Row>
@@ -61,18 +47,25 @@
                 <Footer class="layout-footer-center">2019-2020 &copy; xucanjie</Footer>
             </Layout>
         </Layout>
+        <Modal
+                v-model="logoutModal"
+                @on-ok="logoutEvent"
+                width="300"
+                class-name="vertical-center-modal">
+            <p style="font-size: 15px; font-weight: bold">确定退出?</p>
+        </Modal>
     </div>
 </template>
 
 <script>
     import TagPagesOpened from "../../components/home/tag-pages-opened";
+    import ajax from "../../lib/ajax.js";
+    import Cookies from "js-cookie";
     export default {
         components: {TagPagesOpened},
         data(){
             return{
-                tab0: true,
-                tab1: true,
-                tab2: true,
+                logoutModal: false
             }
         },
         created(){
@@ -85,8 +78,6 @@
         },
         // watch:{
         //     $route(to, from){
-        //         console.log(to);
-        //         console.log(from);
         //         this.$router.push({
         //             name: to.name
         //         });
@@ -102,6 +93,31 @@
                 });
                 this.$store.commit("home/setCurrentPageName", name);
                 this.$store.commit("home/pageOpenedList", name);
+            },
+            logoutEvent(){
+                let _this = this;
+                ajax.post("api/check/logout", {}).then(function(response){
+                    if(response.data.code == 200){
+                        _this.$Message.success({
+                            content: response.data.result,
+                            duration: 0.8
+                        });
+                        window.location.reload();
+                    }
+                    else{
+                        _this.$Message.error({
+                            content: response.data.result,
+                            duration: 0.8
+                        });
+                    }
+
+                }).catch(function(){
+                    _this.$Message.error({
+                        content: "退出异常",
+                        duration: 0.8
+                    });
+                });
+                Cookies.remove("cj.token");
             }
         }
     }
@@ -183,5 +199,11 @@
         text-align: center;
         height: 5%;
         padding: 10px 0 10px 0px;
+    }
+
+    .vertical-center-modal{
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>

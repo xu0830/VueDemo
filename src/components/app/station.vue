@@ -11,7 +11,7 @@
                     <div slot="content" class="collapse-content-div">
                         <!-- 乘车人 -->
                         <Row>
-                            <Col span="8">
+                            <Col span="6">
                                 <span class="collapse-content-title">乘车人: </span>
                                 <div class="collapse-content-item">
                                     <span v-if="orderAutoSubmitForm.passenger.name != ''" class="collapse-content-span">
@@ -23,6 +23,7 @@
                                 </div>
                                 <span v-if="orderAutoSubmitForm.ruleInline.passengerRequireError" class="collapsse-content-error">请选择乘车人</span>
                             </Col>
+
                         </Row>
 
                         <!-- 出发车站 & 到达车站 -->
@@ -297,10 +298,19 @@
 
                         <!--提交-->
                         <Row>
-                            <Col span="8">
-                                <Button icon="ios-train" type="success" @click="submitOrder">
+                            <Col span="3">
+                                <Button icon="ios-train" type="success" @click="submitOrder" :disabled="orderAutoSubmitForm.passenger.isTaskExist">
                                     提交订票
                                 </Button>
+                            </Col>
+                            <Col span="8" v-if="orderAutoSubmitForm.passenger.isTaskExist">
+                                <div style="height: 32px; line-height: 32px; color: red; font-size: 14px;">
+                                    该账号已有正在执行的任务，
+                                    <Button type="error" size="small" @click="stopTaskModal = true">
+                                        停止任务
+                                    </Button>
+                                    或继续等待
+                                </div>
                             </Col>
                         </Row>
                     </div>
@@ -340,7 +350,7 @@
         <!-- 车票信息 -->
         <Row class="content-row-table">
             <Table :loading="ticketLoading" :columns="ticketColumn" :data="ticketTableData"
-                   :border="false" width="1393"></Table>
+                   :border="false" width="1313"></Table>
             <Page :total="ticketDataCount"  prev-text="上一页" next-text="下一页" @on-change="ticketTablePageChange" />
         </Row>
         <!-- 登录对话框 -->
@@ -431,6 +441,11 @@
                 </Row>
             </div>
         </Modal>
+
+        <Modal v-model="stopTaskModal"
+               @on-ok="stopTaskEvent" width="300">
+            <p style="font-size: 15px; font-weight: bold">确定停止当前任务?</p>
+        </Modal>
     </div>
 </template>
 
@@ -444,6 +459,7 @@
         data () {
             let _this = this;
             const validatePic = (rule, value, callback) => {
+
                 if (_this.validatePicPointData.length <= 0) {
                     callback(new Error('请完成图片验证'));
                 } else {
@@ -647,7 +663,7 @@
                     {
                         title: '动卧',
                         key: 'srrb_num',
-                        width: 60,
+                        width: 70,
                         align: 'center'
                     },
                     {
@@ -659,69 +675,70 @@
                     {
                         title: '软座',
                         key: 'rz_num',
-                        width: 60,
+                        width: 70,
                         align: 'center'
                     },
                     {
                         title: '硬座',
                         key: 'yz_num',
-                        width: 60,
+                        width: 70,
                         align: 'center'
                     },
                     {
                         title: '无座',
                         key: 'wz_num',
-                        width: 60,
+                        width: 70,
                         align: 'center'
-                    },
-                    {
-                        title: '操作',
-                        key: 'canWebBuy',
-                        width: 120,
-                        align: 'center',
-                        render: (h, params) => {
-                            if(params.row.canWebBuy === 'Y'){
-                                return h('div', [
-                                    h('Button', {
-                                        props: {
-                                            type: 'primary',
-                                            size: 'small'
-                                        },
-                                        style: {
-                                            marginRight: '5px'
-                                        },
-                                        on: {
-                                            click: () => {
-                                                // this.show(params.index)
-                                            }
-                                        }
-                                    }, '预订')
-                                ])
-                            }
-                            else if(params.row.canWebBuy === 'N'){
-                                return h('div', [
-                                    h('span', {
-
-                                    }, '预订')
-                                ])
-                            }else if(params.row.canWebBuy === 'IS_TIME_NOT_BUY'){
-                                return h('div', [
-                                    h('span', {
-                                        style:{
-                                            textAlign: 'center',
-                                            display: 'inline-block'
-                                        }
-                                    }, '列车运行图调整,暂停发售')
-                                ])
-                            }
-                        }
                     }
+                    // {
+                    //     title: '操作',
+                    //     key: 'canWebBuy',
+                    //     width: 120,
+                    //     align: 'center',
+                    //     render: (h, params) => {
+                    //         if(params.row.canWebBuy === 'Y'){
+                    //             return h('div', [
+                    //                 h('Button', {
+                    //                     props: {
+                    //                         type: 'primary',
+                    //                         size: 'small'
+                    //                     },
+                    //                     style: {
+                    //                         marginRight: '5px'
+                    //                     },
+                    //                     on: {
+                    //                         click: () => {
+                    //                             // this.show(params.index)
+                    //                         }
+                    //                     }
+                    //                 }, '预订')
+                    //             ])
+                    //         }
+                    //         else if(params.row.canWebBuy === 'N'){
+                    //             return h('div', [
+                    //                 h('span', {
+                    //
+                    //                 }, '预订')
+                    //             ])
+                    //         }else if(params.row.canWebBuy === 'IS_TIME_NOT_BUY'){
+                    //             return h('div', [
+                    //                 h('span', {
+                    //                     style:{
+                    //                         textAlign: 'center',
+                    //                         display: 'inline-block'
+                    //                     }
+                    //                 }, '列车运行图调整,暂停发售')
+                    //             ])
+                    //         }
+                    //     }
+                    // }
                 ],
                 ticketTablePageIndex: 0,
                 orderAutoSubmitForm: {
                     passenger:{
                         name: '',
-                        account: ''
+                        account: '',
+                        isTaskExist: false
                     },
                     leftStation: {
                         CNName: ''
@@ -809,7 +826,7 @@
                 validatePicPointData:[],
                 ticketData: [],
                 passengerToken: '',
-
+                stopTaskModal: false
             }
         },
         computed: {
@@ -1037,6 +1054,7 @@
                                     _this.loginModal = false;
                                     _this.orderAutoSubmitForm.passenger.name = response.data.data.name;
                                     _this.orderAutoSubmitForm.passenger.account = response.data.data.account;
+                                    _this.orderAutoSubmitForm.passenger.isTaskExist = response.data.data.isTaskExist;
                                     _this.$Message.success({
                                         content: "登录成功",
                                         duration: 1.5
@@ -1293,11 +1311,11 @@
                     Token: this.passengerToken
                 }).then(function(response){
                     if(response.data.code == 200){
-                        Object.assign(_this.$data, _this.$options.data());
                         _this.$Message.success({
                             content: response.data.result,
                             duration: 2
                         });
+                        window.location.reload();
                     }else{
                         _this.$Message.error({
                             content: response.data.result,
@@ -1307,6 +1325,30 @@
 
                 }).catch(function(error){
 
+                });
+            },
+            stopTaskEvent(){
+                let _this = this;
+                ajax.post('api/station/stopTask',{
+                    userName: _this.orderAutoSubmitForm.passenger.account
+                }).then(function(response){
+                    if(response.data.code == 200){
+                        _this.orderAutoSubmitForm.passenger.isTaskExist = false;
+                        _this.$Message.success({
+                            duration: 0.8,
+                            content: response.data.result
+                        });
+                    }else{
+                        _this.$Message.error({
+                            duration: 0.8,
+                            content: response.data.result
+                        });
+                    }
+                }).catch(function(){
+                    _this.$Message.error({
+                        duration: 0.8,
+                        content: "停止任务出现异常"
+                    });
                 });
             }
         }
@@ -1361,6 +1403,7 @@
 
     .collapse-content-div{
         width: 1000px;
+        min-height: 300px;
         border-bottom: 1.5px solid #dcdee2;
     }
 
