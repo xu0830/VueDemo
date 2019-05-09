@@ -124,8 +124,6 @@
 </script>
 
 <style scoped>
-
-
     .layout{
         width: 100%;
         height: 100%;
@@ -180,7 +178,7 @@
 
     .page-content{
         padding: 20px;
-        height: 82%;
+        /*min-height: 82%;*/
     }
 
     .page-content-container{
